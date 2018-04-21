@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{Python\_assignment}
+    \title{EDA\_Assignment}
     
     
     
@@ -280,477 +280,312 @@
     
 
     
-    Assigntment: Practice Questions On Functions
+    \hypertarget{exercise}{%
+\section{(3.12) Exercise:}\label{exercise}}
 
-    \begin{enumerate}
+\begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Write a function that inputs a number and prints the multiplication
-  table of that number.
+  Download Haberman Cancer Survival dataset from Kaggle. You may have to
+  create a Kaggle account to donwload data.
+  (https://www.kaggle.com/gilsousa/habermans-survival-data-set)
+\item
+  Perform a similar alanlaysis as above on this dataset with the
+  following sections:
 \end{enumerate}
 
+\begin{itemize}
+\tightlist
+\item
+  High level statistics of the dataset: number of points, numer of
+  features, number of classes, data-points per class.
+\item
+  Explain our objective.
+\item
+  Perform Univaraite analysis(PDF, CDF, Boxplot, Voilin plots) to
+  understand which features are useful towards classification.
+\item
+  Perform Bi-variate analysis (scatter plots, pair-plots) to see if
+  combinations of features are useful in classfication.
+\item
+  Write your observations in english as crisply and unambigously as
+  possible. Always quantify your results.
+\end{itemize}
+
+    \hypertarget{performing-high-level-statistics-of-the-dataset}{%
+\subsubsection{Performing High level statistics of the
+dataset:}\label{performing-high-level-statistics-of-the-dataset}}
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{k}{def} \PY{n+nf}{table}\PY{p}{(}\PY{p}{)}\PY{p}{:}
-            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-        \PY{l+s+sd}{    prints multiplication table for the number entered}
-        \PY{l+s+sd}{    }
-        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-            \PY{n}{num}\PY{o}{=}\PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{input}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Please enter number}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-            \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{11}\PY{p}{)}\PY{p}{:}
-                \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ * }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ =}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{num}\PY{p}{,}\PY{n}{i}\PY{p}{)}\PY{p}{,}\PY{n}{num}\PY{o}{*}\PY{n}{i}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}2}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{table}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{}As data has no header, we have to explicitly add header names to the data.}
+        \PY{c+c1}{\PYZsh{} Attribute Information:}
+        \PY{c+c1}{\PYZsh{} Age of patient at time of operation (numerical)\PYZhy{}\PYZgt{} \PYZsq{}age\PYZsq{}}
+        \PY{c+c1}{\PYZsh{} Patient\PYZsq{}s year of operation (year \PYZhy{} 1900, numerical)\PYZhy{}\PYZgt{} \PYZsq{}year\PYZsq{}}
+        \PY{c+c1}{\PYZsh{} Number of positive axillary nodes detected (numerical)\PYZhy{}\PYZgt{} \PYZsq{}nodes\PYZsq{}}
+        \PY{c+c1}{\PYZsh{} Survival status (class attribute) 1 = the patient survived 5 years or longer 2 = the patient died within 5 year\PYZhy{}\PYZgt{}\PYZsq{}status\PYZsq{}}
+        \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{/Users/princebharti/Desktop/dataset/haberman.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{names}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-4 * 1 = 4
-4 * 2 = 8
-4 * 3 = 12
-4 * 4 = 16
-4 * 5 = 20
-4 * 6 = 24
-4 * 7 = 28
-4 * 8 = 32
-4 * 9 = 36
-4 * 10 = 40
-
-    \end{Verbatim}
-
-    2.Write a program to print twin primes less than 1000. If two
-consecutive odd numbers are both prime then they are known as twin
-primes.
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}15}]:} \PY{k}{def} \PY{n+nf}{is\PYZus{}prime}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    for checking no is prime or not.}
-         \PY{l+s+sd}{    return value:if no is prime then return true else false}
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{x}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZpc{}}\PY{k}{i})==0):
-                     \PY{k}{return} \PY{k+kc}{False}
-             \PY{k}{return} \PY{k+kc}{True}
-         
-         \PY{k}{def} \PY{n+nf}{twin\PYZus{}primes}\PY{p}{(}\PY{p}{)}\PY{p}{:}
-             \PY{n}{limit}\PY{o}{=}\PY{l+m+mi}{1000}
-             \PY{n}{no}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{limit}\PY{p}{)}\PY{p}{)}
-             \PY{n}{odd\PYZus{}no}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{filter}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZpc{}}\PY{k}{2})!=0,no))
-             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{twins prime no are :}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{odd\PYZus{}no}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{n}{is\PYZus{}prime}\PY{p}{(}\PY{n}{odd\PYZus{}no}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{n}{is\PYZus{}prime}\PY{p}{(}\PY{n}{odd\PYZus{}no}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{:}
-                     \PY{n+nb}{print}\PY{p}{(}\PY{p}{(}\PY{n}{odd\PYZus{}no}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{odd\PYZus{}no}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{twin\PYZus{}primes}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-twins prime no are :
-(1, 3)
-(3, 5)
-(5, 7)
-(11, 13)
-(17, 19)
-(29, 31)
-(41, 43)
-(59, 61)
-(71, 73)
-(101, 103)
-(107, 109)
-(137, 139)
-(149, 151)
-(179, 181)
-(191, 193)
-(197, 199)
-(227, 229)
-(239, 241)
-(269, 271)
-(281, 283)
-(311, 313)
-(347, 349)
-(419, 421)
-(431, 433)
-(461, 463)
-(521, 523)
-(569, 571)
-(599, 601)
-(617, 619)
-(641, 643)
-(659, 661)
-(809, 811)
-(821, 823)
-(827, 829)
-(857, 859)
-(881, 883)
-
-    \end{Verbatim}
-
-    3.Write a program to find out the prime factors of a number. Example:
-prime factors of 56 - 2, 2, 2, 7
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{k}{def} \PY{n+nf}{prime\PYZus{}factor}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{n}{x}\PY{o}{=}\PY{l+m+mi}{2}
-             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{prime factors for }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{ are: }\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{)}
-             \PY{k}{while}\PY{p}{(}\PY{n}{num}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{num}\PY{o}{\PYZpc{}}\PY{k}{x})==0):
-                     \PY{n+nb}{print}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{end}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-                     \PY{n}{num}\PY{o}{=}\PY{n}{num}\PY{o}{/}\PY{n}{x}
-                 \PY{k}{else}\PY{p}{:}
-                     \PY{n}{x}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
-                     
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{prime\PYZus{}factor}\PY{p}{(}\PY{l+m+mi}{56}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-prime factors for 56 are: 
-2 2 2 7 
-    \end{Verbatim}
-
-    4.Write a program to implement these formulae of permutations and
-combinations. Number of permutations of n objects taken r at a time:
-p(n, r) = n! / (n-r)!. Number of combinations of n objects taken r at a
-time is: c(n, r) = n! / (r!*(n-r)!) = p(n,r) / r!
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}34}]:} \PY{k}{def} \PY{n+nf}{factorial}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    this function returns the factorial of a number}
-         \PY{l+s+sd}{    }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{n}{result}\PY{o}{=}\PY{l+m+mi}{1}
-             \PY{k}{if} \PY{n}{n}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{:}
-                 \PY{k}{return} \PY{l+m+mi}{1}
-             \PY{k}{else}\PY{p}{:}
-                 \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{n}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                     \PY{n}{result} \PY{o}{=}\PY{n}{result}\PY{o}{*}\PY{n}{i}
-             \PY{k}{return} \PY{n}{result}
-         
-         \PY{k}{def} \PY{n+nf}{permutations}\PY{p}{(}\PY{n}{n}\PY{p}{,}\PY{n}{r}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    this function returns the no of permutation(arrangement) of a number}
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{k}{return} \PY{p}{(}\PY{n}{factorial}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{factorial}\PY{p}{(}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{n}{r}\PY{p}{)}
-         
-         \PY{k}{def} \PY{n+nf}{combinations}\PY{p}{(}\PY{n}{n}\PY{p}{,}\PY{n}{r}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    this function returns the no of combination of a number}
-         \PY{l+s+sd}{    }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{k}{return} \PY{p}{(}\PY{p}{(}\PY{n}{factorial}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{factorial}\PY{p}{(}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{n}{r}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{factorial}\PY{p}{(}\PY{n}{r}\PY{p}{)}
-         
-         
-             
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}35}]:} \PY{n}{permutations}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}35}]:} 90.0
+{\color{outcolor}Out[{\color{outcolor}4}]:}    age  year  nodes  status
+        0   30    64      1       1
+        1   30    62      3       1
+        2   30    65      0       1
+        3   31    59      2       1
+        4   31    65      4       1
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}36}]:} \PY{n}{combinations}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{df}\PY{o}{.}\PY{n}{shape} \PY{c+c1}{\PYZsh{} no of rows and column}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}36}]:} 6.0
+{\color{outcolor}Out[{\color{outcolor}5}]:} (306, 4)
 \end{Verbatim}
             
-    5.Write a function that converts a decimal number to binary number
-
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}73}]:} \PY{k}{def} \PY{n+nf}{binary}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{n}{li}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{p}{)}
-             \PY{k}{while}\PY{p}{(}\PY{n}{num}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{num}\PY{o}{\PYZpc{}}\PY{k}{2})!=0):
-                     \PY{n}{num}\PY{o}{=}\PY{n}{num}\PY{o}{/}\PY{o}{/}\PY{l+m+mi}{2}
-                     \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-                 \PY{k}{else}\PY{p}{:}
-                     \PY{n}{num}\PY{o}{=}\PY{n}{num}\PY{o}{/}\PY{o}{/}\PY{l+m+mi}{2}
-                     \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
-             \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{0b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{end}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{li}\PY{p}{[}\PY{p}{:}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{:}
-                 \PY{n+nb}{print}\PY{p}{(}\PY{n}{i}\PY{p}{,}\PY{n}{end}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-                 
-\end{Verbatim}
-
-
-    6.Write a function cubesum() that accepts an integer and returns the sum
-of the cubes of individual digits of that number. Use this function to
-make functions PrintArmstrong() and isArmstrong() to print Armstrong
-numbers and to find whether is an Armstrong number.
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}89}]:} \PY{k}{def} \PY{n+nf}{cubeSum}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    returns the sum of the cubes of individual digits of that numbers}
-         \PY{l+s+sd}{    }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{n}{string}\PY{o}{=}\PY{n+nb}{str}\PY{p}{(}\PY{n}{num}\PY{p}{)}
-             \PY{n}{cube\PYZus{}sum}\PY{o}{=}\PY{l+m+mi}{0}
-             \PY{k}{for} \PY{n}{ch} \PY{o+ow}{in} \PY{n}{string}\PY{p}{:}
-                 \PY{n}{cube\PYZus{}sum}\PY{o}{=}\PY{n}{cube\PYZus{}sum}\PY{o}{+}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{ch}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{)}
-             \PY{k}{return} \PY{n}{cube\PYZus{}sum}
-         
-         \PY{k}{def} \PY{n+nf}{printArmstrong}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    prints all armstrong numbers between 0 and number passed }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{n}{i}\PY{o}{==}\PY{n}{cubesum}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}\PY{p}{:}
-                     \PY{n+nb}{print}\PY{p}{(}\PY{n}{i}\PY{p}{,}\PY{n}{end}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-             
-         \PY{k}{def} \PY{n+nf}{isArmstrong}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    this function checks whether a number is armstrong or not }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{k}{if} \PY{n}{num}\PY{o}{==}\PY{n}{cubeSum}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{return} \PY{k+kc}{True}
-             \PY{k}{return} \PY{k+kc}{False}
-             
-                 
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}90}]:} \PY{n}{printArmstrong}\PY{p}{(}\PY{l+m+mi}{1000}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-0 1 153 370 371 407 
-    \end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}91}]:} \PY{n}{isArmstrong}\PY{p}{(}\PY{l+m+mi}{371}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}91}]:} True
+{\color{outcolor}Out[{\color{outcolor}6}]:} 1    225
+        2     81
+        Name: status, dtype: int64
 \end{Verbatim}
-            
+            Result of High level Stats:
+1.number of points/observation:306
+2.numer of features:3 (age,year,nodes)
+3.number of classes:2 ( 1 and 2)
+4.data-points per class : class '1'->225 data points (the patient survived 5 years or longer)
+                        class '2'->81 data points (the patient died within 5 year)
+
+    \hypertarget{objective-given-a-data-point-classify-whether-a-patient-belongs-to-class-1-survived-5-years-or-longer-or-class-2-the-patient-died-within-5-year}{%
+\paragraph{Objective: Given a data point classify whether a patient
+belongs to class 1 (survived 5 years or longer ) or class 2 (the patient
+died within 5
+year)}\label{objective-given-a-data-point-classify-whether-a-patient-belongs-to-class-1-survived-5-years-or-longer-or-class-2-the-patient-died-within-5-year}}
+
+    \hypertarget{performing-univaraite-analysis}{%
+\paragraph{Performing Univaraite
+analysis:}\label{performing-univaraite-analysis}}
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}92}]:} \PY{n}{isArmstrong}\PY{p}{(}\PY{l+m+mi}{500}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}92}]:} False
+{\color{outcolor}Out[{\color{outcolor}7}]:}    age  year  nodes  status
+        0   30    64      1       1
+        1   30    62      3       1
+        2   30    65      0       1
+        3   31    59      2       1
+        4   31    65      4       1
 \end{Verbatim}
             
-    7.Write a function prodDigits() that inputs a number and returns the
-product of digits of that number.
-
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}98}]:} \PY{k}{def} \PY{n+nf}{prodDigits}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             
-             \PY{n}{product}\PY{o}{=}\PY{l+m+mi}{1}
-             \PY{k}{for} \PY{n}{element} \PY{o+ow}{in} \PY{n+nb}{str}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-                 \PY{n}{product}\PY{o}{=}\PY{n}{product}\PY{o}{*}\PY{n+nb}{int}\PY{p}{(}\PY{n}{element}\PY{p}{)}
-             \PY{k}{return} \PY{n}{product}
-             
-             
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{}lets analyse and visualize single feature at a time}
+        \PY{c+c1}{\PYZsh{}first let\PYZsq{}s start with age feature.}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}100}]:} \PY{n}{prodDigits}\PY{p}{(}\PY{l+m+mi}{123}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{df\PYZus{}1}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{]}
+        \PY{n}{df\PYZus{}2}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{2}\PY{p}{]}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}  \PY{c+c1}{\PYZsh{} here we can see that both classes are overlapping so \PYZsq{}age\PYZsq{} feature alone cannot distinguish bot class}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}100}]:} 6
+{\color{outcolor}Out[{\color{outcolor}10}]:} <matplotlib.legend.Legend at 0x11326b5c0>
 \end{Verbatim}
             
-    8.If all digits of a number n are multiplied by each other repeating
-with the product, the one digit number obtained at last is called the
-multiplicative digital root of n. The number of times digits need to be
-multiplied to reach one digit is called the multiplicative persistance
-of n.
-
-Example: 86 -\textgreater{} 48 -\textgreater{} 32 -\textgreater{} 6 (MDR
-6, MPersistence 3) ; 341 -\textgreater{} 12-\textgreater{}2 (MDR 2,
-MPersistence 2)
-
-Using the function prodDigits() of previous exercise write functions
-MDR() and MPersistence() that input a number and return its
-multiplicative digital root and multiplicative persistence respectively
-
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_13_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}110}]:} \PY{k}{def} \PY{n+nf}{MDR}\PY{p}{(}\PY{p}{)}\PY{p}{:}
-              \PY{n}{num}\PY{o}{=}\PY{n+nb}{input}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{enter a number:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-              
-              \PY{k}{while}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                  \PY{n}{num}\PY{o}{=}\PY{n+nb}{str}\PY{p}{(}\PY{n}{prodDigits}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{)}
-              
-              \PY{k}{return} \PY{n+nb}{int}\PY{p}{(}\PY{n}{num}\PY{p}{)}
-          
-          
-          \PY{k}{def}  \PY{n+nf}{MPersistence}\PY{p}{(}\PY{p}{)}\PY{p}{:}
-              
-              \PY{n}{num}\PY{o}{=}\PY{n+nb}{input}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{enter a number:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-              \PY{n}{count}\PY{o}{=}\PY{l+m+mi}{0}
-              \PY{k}{while}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                  \PY{n}{num}\PY{o}{=}\PY{n+nb}{str}\PY{p}{(}\PY{n}{prodDigits}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{)}
-                  \PY{n}{count}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
-              
-              \PY{k}{return} \PY{n}{count}
-              
-\end{Verbatim}
-
-
-    9.Write a function sumPdivisors() that finds the sum of proper divisors
-of a number. Proper divisors of a number are those numbers by which the
-number is divisible, except the number itself. For example proper
-divisors of 36 are 1, 2, 3, 4, 6, 9, 18
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}34}]:} \PY{k}{def} \PY{n+nf}{sumPdivisors}\PY{p}{(}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-             \PY{n}{li}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{p}{)}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{num}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{n}{num}\PY{o}{\PYZpc{}}\PY{k}{i}==0):
-                     \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{i}\PY{p}{)}
-             \PY{k}{return} \PY{n+nb}{sum}\PY{p}{(}\PY{n}{li}\PY{p}{)}
-             
-\end{Verbatim}
-
-
-    10.A number is called perfect if the sum of proper divisors of that
-number is equal to the number. For example 28 is perfect number, since
-1+2+4+7+14=28. Write a program to print all the perfect numbers in a
-given range
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}35}]:} \PY{k}{def} \PY{n+nf}{perfectNumber}\PY{p}{(}\PY{n}{m}\PY{p}{,}\PY{n}{n}\PY{p}{)}\PY{p}{:}
-             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{all the perfect no in the given range are:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{m}\PY{p}{,}\PY{n}{n}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if} \PY{n}{i}\PY{o}{==}\PY{n}{sumPdivisors}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{:}
-                     \PY{n+nb}{print}\PY{p}{(}\PY{n}{i}\PY{p}{,}\PY{n}{end}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}36}]:} \PY{n}{perfectNumber}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{100}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-all the perfect no in the given range are:
-6 28 
-    \end{Verbatim}
-
-    11.Two different numbers are called amicable numbers if the sum of the
-proper divisors of each is equal to the other number. For example 220
-and 284 are amicable numbers. Sum of proper divisors of 220 =
-1+2+4+5+10+11+20+22+44+55+110 = 284 Sum of proper divisors of 284 =
-1+2+4+71+142 = 220 Write a function to print pairs of amicable numbers
-in a range
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}39}]:} \PY{k}{def} \PY{n+nf}{amicable}\PY{p}{(}\PY{n}{m}\PY{p}{,}\PY{n}{n}\PY{p}{)}\PY{p}{:}
-             \PY{n}{di}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
-             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{m}\PY{p}{,}\PY{n}{n}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                 \PY{n}{di}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{=}\PY{n}{sumPdivisors}\PY{p}{(}\PY{n}{i}\PY{p}{)}
-             \PY{k}{for} \PY{n}{k}\PY{p}{,}\PY{n}{v} \PY{o+ow}{in} \PY{n}{di}\PY{o}{.}\PY{n}{items}\PY{p}{(}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{if}\PY{p}{(}\PY{n}{k}\PY{o}{==}\PY{n}{di}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{n}{v}\PY{p}{)}\PY{p}{)}\PY{p}{:}
-                     \PY{n+nb}{print}\PY{p}{(}\PY{p}{(}\PY{n}{k}\PY{p}{,}\PY{n}{v}\PY{p}{)}\PY{p}{)}
-             
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}40}]:} \PY{n}{amicable}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1000}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-(6, 6)
-(28, 28)
-(220, 284)
-(284, 220)
-(496, 496)
-
-    \end{Verbatim}
-
-    12.Write a program which can filter odd numbers in a list by using
-filter function
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{k}{def} \PY{n+nf}{filterOddNumber}\PY{p}{(}\PY{n}{li}\PY{p}{)}\PY{p}{:}
-             \PY{n}{result}\PY{o}{=}\PY{n+nb}{filter}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZpc{}}\PY{k}{2})!=0,li)
-             \PY{k}{return} \PY{n+nb}{list}\PY{p}{(}\PY{n}{result}\PY{p}{)}
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{res}\PY{o}{=}\PY{n}{filterOddNumber}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{6}\PY{p}{,}\PY{l+m+mi}{7}\PY{p}{]}\PY{p}{)}
-\end{Verbatim}
-
-
-    13.Write a program which can map() to make a list whose elements are
-cube of elements in a given list
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}20}]:} \PY{k}{def} \PY{n+nf}{cubeOfelement}\PY{p}{(}\PY{n}{li}\PY{p}{)}\PY{p}{:}
-             \PY{n}{result}\PY{o}{=}\PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{,}\PY{n}{li}\PY{p}{)}
-             \PY{k}{return} \PY{n+nb}{list}\PY{p}{(}\PY{n}{result}\PY{p}{)}
-             
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}21}]:} \PY{n}{cubeOfelement}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} here also we can see that both classes are overlapping so \PYZsq{}year\PYZsq{} feature alone }
+                                          \PY{c+c1}{\PYZsh{} cannot distinguish bot class}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}21}]:} [1, 8, 27, 64]
+{\color{outcolor}Out[{\color{outcolor}11}]:} <matplotlib.legend.Legend at 0x1131d0668>
 \end{Verbatim}
             
-    14.Write a program which can map() and filter() to make a list whose
-elements are cube of even number in a given list
-
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_14_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}22}]:} \PY{k}{def} \PY{n+nf}{cubeOfEven}\PY{p}{(}\PY{n}{li}\PY{p}{)}\PY{p}{:}
-             \PY{k}{return} \PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{,}\PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{filter}\PY{p}{(}\PY{k}{lambda} \PY{n}{y}\PY{p}{:}\PY{n}{y}\PY{o}{\PYZpc{}}\PY{k}{2}==0,li))))
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}23}]:} \PY{n}{cubeOfEven}\PY{p}{(}\PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} here also we can see that both classes are overlapping so \PYZsq{}nodes\PYZsq{} feature alone }
+                                          \PY{c+c1}{\PYZsh{} cannot distinguish bot class}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}23}]:} [8, 64, 216, 512]
+{\color{outcolor}Out[{\color{outcolor}12}]:} <matplotlib.legend.Legend at 0x1131d0b00>
 \end{Verbatim}
             
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_15_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{}here also more than 80\PYZpc{} of the points overlap ,thus accuracy of classification would be very low}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}13}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x1133c88d0>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_16_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{}here also more than 60\PYZpc{} of the points overlap ,thus accuracy of classification would be very low.}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11348c9e8>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{} here also 60\PYZpc{} of  points are overlapping thus there is no point of considering \PYZsq{}nodes\PYZsq{} feature alone for classification.}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}15}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x1135212e8>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_18_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}16}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11370e588>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_19_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}17}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11372e550>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}18}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x114086c18>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Result of univariate analysis: After performing univariate analysis , we
+saw using pdf, box and voiling plots that ,none of the feature alone can
+classify given data point as it would have very less accuracy.
+
+    \hypertarget{performing-bi-variate-analysis}{%
+\paragraph{Performing Bi-variate
+analysis}\label{performing-bi-variate-analysis}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{df\PYZus{}tranformed}\PY{o}{=}\PY{n}{df}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+         \PY{n}{df\PYZus{}tranformed}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status\PYZus{}string}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Series}\PY{p}{(}\PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class 1}\PY{l+s+s1}{\PYZsq{}} \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1} \PY{k}{else} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class 2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{k}{del} \PY{n}{df\PYZus{}tranformed}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{pairplot}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{df\PYZus{}tranformed}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status\PYZus{}string}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_25_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Result of Bi-Variate analysis: As we can see in pair plot none of the 2
+variables taken at a time can classify our given point.so if we choose
+any of the 2 variable we would not be able to classify a given point.
+
+    \hypertarget{result-after-performing-the-analysis-we-saw-none-of-the-feature-alone-or-combination-of-2-can-classify-the-given-data-point-.-so-according-to-me-we-do-not-have-right-features-to-classify-the-given-data-point.}{%
+\subsubsection{Result : After performing the analysis we saw none of the
+feature alone or combination of 2 can classify the given data point . so
+according to me we do not have right features to classify the given data
+point.}\label{result-after-performing-the-analysis-we-saw-none-of-the-feature-alone-or-combination-of-2-can-classify-the-given-data-point-.-so-according-to-me-we-do-not-have-right-features-to-classify-the-given-data-point.}}
+
 
     % Add a bibliography block to the postdoc
     
