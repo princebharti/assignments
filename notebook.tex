@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{EDA\_Assignment}
+    \title{Linear\_algebra\_assignment}
     
     
     
@@ -280,165 +280,214 @@
     
 
     
-    \hypertarget{exercise}{%
-\section{(3.12) Exercise:}\label{exercise}}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Download Haberman Cancer Survival dataset from Kaggle. You may have to
-  create a Kaggle account to donwload data.
-  (https://www.kaggle.com/gilsousa/habermans-survival-data-set)
-\item
-  Perform a similar alanlaysis as above on this dataset with the
-  following sections:
-\end{enumerate}
-
-\begin{itemize}
-\tightlist
-\item
-  High level statistics of the dataset: number of points, numer of
-  features, number of classes, data-points per class.
-\item
-  Explain our objective.
-\item
-  Perform Univaraite analysis(PDF, CDF, Boxplot, Voilin plots) to
-  understand which features are useful towards classification.
-\item
-  Perform Bi-variate analysis (scatter plots, pair-plots) to see if
-  combinations of features are useful in classfication.
-\item
-  Write your observations in english as crisply and unambigously as
-  possible. Always quantify your results.
-\end{itemize}
-
-    \hypertarget{performing-high-level-statistics-of-the-dataset}{%
-\subsubsection{Performing High level statistics of the
-dataset:}\label{performing-high-level-statistics-of-the-dataset}}
-
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}2}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{}As data has no header, we have to explicitly add header names to the data.}
-        \PY{c+c1}{\PYZsh{} Attribute Information:}
-        \PY{c+c1}{\PYZsh{} Age of patient at time of operation (numerical)\PYZhy{}\PYZgt{} \PYZsq{}age\PYZsq{}}
-        \PY{c+c1}{\PYZsh{} Patient\PYZsq{}s year of operation (year \PYZhy{} 1900, numerical)\PYZhy{}\PYZgt{} \PYZsq{}year\PYZsq{}}
-        \PY{c+c1}{\PYZsh{} Number of positive axillary nodes detected (numerical)\PYZhy{}\PYZgt{} \PYZsq{}nodes\PYZsq{}}
-        \PY{c+c1}{\PYZsh{} Survival status (class attribute) 1 = the patient survived 5 years or longer 2 = the patient died within 5 year\PYZhy{}\PYZgt{}\PYZsq{}status\PYZsq{}}
-        \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{/Users/princebharti/Desktop/dataset/haberman.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{names}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{data}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{creditcard.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \end{Verbatim}
 
 
+    \hypertarget{task-1}{%
+\subsection{Task 1}\label{task-1}}
+
+    \hypertarget{objective-given-a-datapointtransaction-classify-whether-a-transaction-is-fraud-or-not.}{%
+\paragraph{Objective : Given a datapoint(transaction) classify whether a
+transaction is fraud or
+not.}\label{objective-given-a-datapointtransaction-classify-whether-a-transaction-is-fraud-or-not.}}
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}4}]:}    age  year  nodes  status
-        0   30    64      1       1
-        1   30    62      3       1
-        2   30    65      0       1
-        3   31    59      2       1
-        4   31    65      4       1
+{\color{outcolor}Out[{\color{outcolor}4}]:}    Time        V1        V2        V3        V4        V5        V6        V7  \textbackslash{}
+        0   0.0 -1.359807 -0.072781  2.536347  1.378155 -0.338321  0.462388  0.239599   
+        1   0.0  1.191857  0.266151  0.166480  0.448154  0.060018 -0.082361 -0.078803   
+        2   1.0 -1.358354 -1.340163  1.773209  0.379780 -0.503198  1.800499  0.791461   
+        3   1.0 -0.966272 -0.185226  1.792993 -0.863291 -0.010309  1.247203  0.237609   
+        4   2.0 -1.158233  0.877737  1.548718  0.403034 -0.407193  0.095921  0.592941   
+        
+                 V8        V9  {\ldots}         V21       V22       V23       V24  \textbackslash{}
+        0  0.098698  0.363787  {\ldots}   -0.018307  0.277838 -0.110474  0.066928   
+        1  0.085102 -0.255425  {\ldots}   -0.225775 -0.638672  0.101288 -0.339846   
+        2  0.247676 -1.514654  {\ldots}    0.247998  0.771679  0.909412 -0.689281   
+        3  0.377436 -1.387024  {\ldots}   -0.108300  0.005274 -0.190321 -1.175575   
+        4 -0.270533  0.817739  {\ldots}   -0.009431  0.798278 -0.137458  0.141267   
+        
+                V25       V26       V27       V28  Amount  Class  
+        0  0.128539 -0.189115  0.133558 -0.021053  149.62      0  
+        1  0.167170  0.125895 -0.008983  0.014724    2.69      0  
+        2 -0.327642 -0.139097 -0.055353 -0.059752  378.66      0  
+        3  0.647376 -0.221929  0.062723  0.061458  123.50      0  
+        4 -0.206010  0.502292  0.219422  0.215153   69.99      0  
+        
+        [5 rows x 31 columns]
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{df}\PY{o}{.}\PY{n}{shape} \PY{c+c1}{\PYZsh{} no of rows and column}
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{data}\PY{o}{.}\PY{n}{shape}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}5}]:} (306, 4)
+{\color{outcolor}Out[{\color{outcolor}5}]:} (284807, 31)
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{unique}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}6}]:} 1    225
-        2     81
-        Name: status, dtype: int64
-\end{Verbatim}
-            Result of High level Stats:
-1.number of points/observation:306
-2.numer of features:3 (age,year,nodes)
-3.number of classes:2 ( 1 and 2)
-4.data-points per class : class '1'->225 data points (the patient survived 5 years or longer)
-                        class '2'->81 data points (the patient died within 5 year)
-
-    \hypertarget{objective-given-a-data-point-classify-whether-a-patient-belongs-to-class-1-survived-5-years-or-longer-or-class-2-the-patient-died-within-5-year}{%
-\paragraph{Objective: Given a data point classify whether a patient
-belongs to class 1 (survived 5 years or longer ) or class 2 (the patient
-died within 5
-year)}\label{objective-given-a-data-point-classify-whether-a-patient-belongs-to-class-1-survived-5-years-or-longer-or-class-2-the-patient-died-within-5-year}}
-
-    \hypertarget{performing-univaraite-analysis}{%
-\paragraph{Performing Univaraite
-analysis:}\label{performing-univaraite-analysis}}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}7}]:}    age  year  nodes  status
-        0   30    64      1       1
-        1   30    62      3       1
-        2   30    65      0       1
-        3   31    59      2       1
-        4   31    65      4       1
+{\color{outcolor}Out[{\color{outcolor}6}]:} array([0, 1])
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{}lets analyse and visualize single feature at a time}
-        \PY{c+c1}{\PYZsh{}first let\PYZsq{}s start with age feature.}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{nunique}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}7}]:} 2
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}8}]:} 0    284315
+        1       492
+        Name: Class, dtype: int64
+\end{Verbatim}
+            
+    \hypertarget{basic-info-about-creditcard-data-set}{%
+\paragraph{Basic info about creditcard data
+set:}\label{basic-info-about-creditcard-data-set}}
+
+1.no of features=30
+
+2.no of class=2,class 0 (not fraud) and class 1 (fraud)
+
+3.no of datapoints/observation =284807
+
+4.no of datapoint labeled 0 =284315
+
+5.no of datapoint labeled 1=492
+
+Thus, it's a unbalanced dataset.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{data}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{}no missing values }
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}9}]:} Time      0
+        V1        0
+        V2        0
+        V3        0
+        V4        0
+        V5        0
+        V6        0
+        V7        0
+        V8        0
+        V9        0
+        V10       0
+        V11       0
+        V12       0
+        V13       0
+        V14       0
+        V15       0
+        V16       0
+        V17       0
+        V18       0
+        V19       0
+        V20       0
+        V21       0
+        V22       0
+        V23       0
+        V24       0
+        V25       0
+        V26       0
+        V27       0
+        V28       0
+        Amount    0
+        Class     0
+        dtype: int64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{data}\PY{o}{.}\PY{n}{info}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{} getting basic info about the dataset}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{df\PYZus{}1}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{]}
-        \PY{n}{df\PYZus{}2}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{2}\PY{p}{]}
-\end{Verbatim}
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 284807 entries, 0 to 284806
+Data columns (total 31 columns):
+Time      284807 non-null float64
+V1        284807 non-null float64
+V2        284807 non-null float64
+V3        284807 non-null float64
+V4        284807 non-null float64
+V5        284807 non-null float64
+V6        284807 non-null float64
+V7        284807 non-null float64
+V8        284807 non-null float64
+V9        284807 non-null float64
+V10       284807 non-null float64
+V11       284807 non-null float64
+V12       284807 non-null float64
+V13       284807 non-null float64
+V14       284807 non-null float64
+V15       284807 non-null float64
+V16       284807 non-null float64
+V17       284807 non-null float64
+V18       284807 non-null float64
+V19       284807 non-null float64
+V20       284807 non-null float64
+V21       284807 non-null float64
+V22       284807 non-null float64
+V23       284807 non-null float64
+V24       284807 non-null float64
+V25       284807 non-null float64
+V26       284807 non-null float64
+V27       284807 non-null float64
+V28       284807 non-null float64
+Amount    284807 non-null float64
+Class     284807 non-null int64
+dtypes: float64(30), int64(1)
+memory usage: 67.4 MB
 
+    \end{Verbatim}
+
+    \hypertarget{performing-univariate-analysis}{%
+\subsubsection{Performing Univariate
+Analysis}\label{performing-univariate-analysis}}
+
+    \hypertarget{lets-start-univariate-analysis-by-ploting-pdf-for-each-of-the-feature}{%
+\paragraph{Lets start univariate analysis by ploting PDF for each of the
+feature:}\label{lets-start-univariate-analysis-by-ploting-pdf-for-each-of-the-feature}}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}  \PY{c+c1}{\PYZsh{} here we can see that both classes are overlapping so \PYZsq{}age\PYZsq{} feature alone cannot distinguish bot class}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
          \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}10}]:} <matplotlib.legend.Legend at 0x11326b5c0>
-\end{Verbatim}
-            
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_13_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} here also we can see that both classes are overlapping so \PYZsq{}year\PYZsq{} feature alone }
-                                          \PY{c+c1}{\PYZsh{} cannot distinguish bot class}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}11}]:} <matplotlib.legend.Legend at 0x1131d0668>
+{\color{outcolor}Out[{\color{outcolor}11}]:} <matplotlib.legend.Legend at 0x3fff38e8a5f8>
 \end{Verbatim}
             
     \begin{center}
@@ -447,15 +496,14 @@ analysis:}\label{performing-univaraite-analysis}}
     { \hspace*{\fill} \\}
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{df}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{} here also we can see that both classes are overlapping so \PYZsq{}nodes\PYZsq{} feature alone }
-                                          \PY{c+c1}{\PYZsh{} cannot distinguish bot class}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
          \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}12}]:} <matplotlib.legend.Legend at 0x1131d0b00>
+{\color{outcolor}Out[{\color{outcolor}12}]:} <matplotlib.legend.Legend at 0x3fff38f0b0b8>
 \end{Verbatim}
             
     \begin{center}
@@ -464,13 +512,14 @@ analysis:}\label{performing-univaraite-analysis}}
     { \hspace*{\fill} \\}
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
-         \PY{c+c1}{\PYZsh{}here also more than 80\PYZpc{} of the points overlap ,thus accuracy of classification would be very low}
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}13}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x1133c88d0>
+{\color{outcolor}Out[{\color{outcolor}13}]:} <matplotlib.legend.Legend at 0x3fff3b7225c0>
 \end{Verbatim}
             
     \begin{center}
@@ -479,56 +528,176 @@ analysis:}\label{performing-univaraite-analysis}}
     { \hspace*{\fill} \\}
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
-         \PY{c+c1}{\PYZsh{}here also more than 60\PYZpc{} of the points overlap ,thus accuracy of classification would be very low.}
+{\color{incolor}In [{\color{incolor}14}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
+             \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+             \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}14}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11348c9e8>
-\end{Verbatim}
-            
+    \begin{Verbatim}[commandchars=\\\{\}]
+/opt/conda/envs/py3.6/lib/python3.6/site-packages/matplotlib/pyplot.py:528: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max\_open\_warning`).
+  max\_open\_warning, RuntimeWarning)
+
+    \end{Verbatim}
+
     \begin{center}
     \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_1.png}
     \end{center}
     { \hspace*{\fill} \\}
     
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
-         \PY{c+c1}{\PYZsh{} here also 60\PYZpc{} of  points are overlapping thus there is no point of considering \PYZsq{}nodes\PYZsq{} feature alone for classification.}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}15}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x1135212e8>
-\end{Verbatim}
-            
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_18_1.png}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_2.png}
     \end{center}
     { \hspace*{\fill} \\}
     
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}16}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11370e588>
-\end{Verbatim}
-            
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_19_1.png}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_3.png}
     \end{center}
     { \hspace*{\fill} \\}
     
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_4.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_5.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_6.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_7.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_8.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_9.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_10.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_11.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_12.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_13.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_14.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_15.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_16.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_17.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_18.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_19.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_20.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_21.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_22.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_23.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_24.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_25.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_26.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_27.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_28.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{conclusion-of-pdf-we-saw-for-each-feature-both-classes-are-overlapping-and-almost-fraud-and-non-fraud-are-insepreable-we-can-verify-by-ploting-box-plot}{%
+\subparagraph{Conclusion of pdf :we saw for each feature both classes
+are overlapping and almost fraud and non fraud are insepreable, we can
+verify by ploting box
+plot}\label{conclusion-of-pdf-we-saw-for-each-feature-both-classes-are-overlapping-and-almost-fraud-and-non-fraud-are-insepreable-we-can-verify-by-ploting-box-plot}}
+
+    \hypertarget{lets-move-further-with-box-plot}{%
+\paragraph{let's move further with box plot
+:}\label{lets-move-further-with-box-plot}}
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}17}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x11372e550>
+{\color{outcolor}Out[{\color{outcolor}15}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x3fff382f82e8>
 \end{Verbatim}
             
     \begin{center}
@@ -537,12 +706,13 @@ analysis:}\label{performing-univaraite-analysis}}
     { \hspace*{\fill} \\}
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{violinplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}18}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x114086c18>
+{\color{outcolor}Out[{\color{outcolor}16}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x3fff27057748>
 \end{Verbatim}
             
     \begin{center}
@@ -550,42 +720,416 @@ analysis:}\label{performing-univaraite-analysis}}
     \end{center}
     { \hspace*{\fill} \\}
     
-    Result of univariate analysis: After performing univariate analysis , we
-saw using pdf, box and voiling plots that ,none of the feature alone can
-classify given data point as it would have very less accuracy.
-
-    \hypertarget{performing-bi-variate-analysis}{%
-\paragraph{Performing Bi-variate
-analysis}\label{performing-bi-variate-analysis}}
-
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{df\PYZus{}tranformed}\PY{o}{=}\PY{n}{df}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-         \PY{n}{df\PYZus{}tranformed}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status\PYZus{}string}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Series}\PY{p}{(}\PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class 1}\PY{l+s+s1}{\PYZsq{}} \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1} \PY{k}{else} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class 2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-         \PY{k}{del} \PY{n}{df\PYZus{}tranformed}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+{\color{incolor}In [{\color{incolor}17}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
+             \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+             \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}20}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{pairplot}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{df\PYZus{}tranformed}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{status\PYZus{}string}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+/opt/conda/envs/py3.6/lib/python3.6/site-packages/seaborn/axisgrid.py:703: UserWarning: Using the boxplot function without specifying `order` is likely to produce an incorrect plot.
+  warnings.warn(warning)
+/opt/conda/envs/py3.6/lib/python3.6/site-packages/matplotlib/pyplot.py:528: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max\_open\_warning`).
+  max\_open\_warning, RuntimeWarning)
+
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_4.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_5.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_6.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_7.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_8.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_9.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_10.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_11.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_12.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_13.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_14.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_15.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_16.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_17.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_18.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_19.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_20.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_21.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_22.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_23.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_24.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_25.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_26.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_27.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_28.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \#\#\#\#\# Coclusion of boxplot: we saw in each of box plot for
+features, almost 30-40 \% of data are overlapping thus classes cannot be
+well seperated.
+
+    \hypertarget{conclusion-of-univariate-analysis-so-as-we-saw-in-kde-plot-and-box-plot-30-40-of-data-are-overlapping-thus-classes-cannot-be-well-sepearated-with-good-accuracy-by-considering-each-feature-alone.}{%
+\paragraph{Conclusion of univariate analysis: So as we saw in kde plot
+and box plot , 30\%-40\% of data are overlapping , thus classes cannot
+be well sepearated with good accuracy by considering each feature
+alone.}\label{conclusion-of-univariate-analysis-so-as-we-saw-in-kde-plot-and-box-plot-30-40-of-data-are-overlapping-thus-classes-cannot-be-well-sepearated-with-good-accuracy-by-considering-each-feature-alone.}}
+
+    \hypertarget{bivariate-analysis}{%
+\paragraph{BiVariate Analysis}\label{bivariate-analysis}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{} Plotting scatter plots between some feaures as for 30 features , pair plot would be very large so we can just plot by picking features randomly}
+        
+        \PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}\PYZbs{}
+        \PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}4}]:} <seaborn.axisgrid.FacetGrid at 0x3fff30d58f98>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_26_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{28}\PY{p}{)}\PY{p}{:}
+             \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{plt}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+                 \PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}\PYZbs{}
+                 \PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{j}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_25_0.png}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_27_0.png}
     \end{center}
     { \hspace*{\fill} \\}
     
-    Result of Bi-Variate analysis: As we can see in pair plot none of the 2
-variables taken at a time can classify our given point.so if we choose
-any of the 2 variable we would not be able to classify a given point.
+    \hypertarget{conclustion-of-eda-we-saw-by-univariate-analysis-and-bivariate-analysis-that-it-is-very-difficult-to-classify-transactionsfraud-or-not-by-considering-only-1-or-2-feature-at-a-time-with-good-accuracy.-so-may-be-considering-all-features-we-would-be-able-to-classify-fraud-transaction-from-non-fraud-transaction.}{%
+\paragraph{Conclustion of EDA : we saw by univariate analysis and
+bivariate analysis , that it is very difficult to classify
+transactions(fraud or not ) by considering only 1 or 2 feature at a time
+with good accuracy. so may be considering all features we would be able
+to classify fraud transaction from non-fraud
+transaction.}\label{conclustion-of-eda-we-saw-by-univariate-analysis-and-bivariate-analysis-that-it-is-very-difficult-to-classify-transactionsfraud-or-not-by-considering-only-1-or-2-feature-at-a-time-with-good-accuracy.-so-may-be-considering-all-features-we-would-be-able-to-classify-fraud-transaction-from-non-fraud-transaction.}}
 
-    \hypertarget{result-after-performing-the-analysis-we-saw-none-of-the-feature-alone-or-combination-of-2-can-classify-the-given-data-point-.-so-according-to-me-we-do-not-have-right-features-to-classify-the-given-data-point.}{%
-\subsubsection{Result : After performing the analysis we saw none of the
-feature alone or combination of 2 can classify the given data point . so
-according to me we do not have right features to classify the given data
-point.}\label{result-after-performing-the-analysis-we-saw-none-of-the-feature-alone-or-combination-of-2-can-classify-the-given-data-point-.-so-according-to-me-we-do-not-have-right-features-to-classify-the-given-data-point.}}
+    \hypertarget{task2}{%
+\subsection{Task2}\label{task2}}
 
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{c+c1}{\PYZsh{}calculating the simalirty metric}
+         \PY{k}{def} \PY{n+nf}{similarity}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{b}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{alength}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{a}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+                 \PY{n}{blength}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{b}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+                 \PY{k}{return} \PY{n}{np}\PY{o}{.}\PY{n}{arccos}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{b}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{alength}\PY{o}{*}\PY{n}{blength}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{c+c1}{\PYZsh{} calculation the ratio of class }
+         \PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+         \PY{n}{percent\PYZus{}label\PYZus{}0}\PY{o}{=}\PY{p}{(}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{/}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{percent\PYZus{}label\PYZus{}1}\PY{o}{=}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:.4f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{percent\PYZus{}label\PYZus{}0}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:.4f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{percent\PYZus{}label\PYZus{}1}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.9983
+0.0017
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{c+c1}{\PYZsh{}creating sample of 500 rows having  same class proportion as in complete dataset.}
+         \PY{n}{data\PYZus{}class0}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{]}
+         \PY{n}{data\PYZus{}class1}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{]}
+         \PY{n}{sample}\PY{o}{=}\PY{n}{data\PYZus{}class0}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{l+m+mi}{99}\PY{p}{,}\PY{p}{:}\PY{p}{]}
+         \PY{n}{sample}\PY{o}{=}\PY{n}{sample}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data\PYZus{}class1}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:} 0.0    99
+         1.0     1
+         Name: Class, dtype: int64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{k}{def} \PY{n+nf}{top10}\PY{p}{(}\PY{n}{query\PYZus{}id}\PY{p}{,}\PY{n}{dataset}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+         \PY{l+s+sd}{    this method finds top 10 similar transaction}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+             \PY{n}{li}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{n}{result}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{current\PYZus{}id} \PY{o+ow}{in} \PY{n}{dataset}\PY{o}{.}\PY{n}{index}\PY{p}{:} \PY{c+c1}{\PYZsh{} looping over all the id in the dataset}
+                 \PY{k}{if}\PY{p}{(}\PY{n}{current\PYZus{}id}\PY{o}{==}\PY{n}{query\PYZus{}id}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{} skipping same row in dataset}
+                     \PY{k}{continue}
+                 \PY{k}{else}\PY{p}{:}
+                     \PY{n}{sim}\PY{o}{=}\PY{n}{similarity}\PY{p}{(}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{query\PYZus{}id}\PY{p}{]}\PY{p}{,}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{current\PYZus{}id}\PY{p}{]}\PY{p}{)}
+                     \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{[}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{current\PYZus{}id}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{current\PYZus{}id}\PY{p}{,}\PY{n}{sim}\PY{p}{]}\PY{p}{)} \PY{c+c1}{\PYZsh{} tuple of (class of current\PYZus{}id, current\PYZus{}id,similarity value  )}
+                     
+             
+             \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{li}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction\PYZus{}class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{similarity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+             \PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{similarity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,}\PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+             
+             
+             \PY{k}{for} \PY{n}{index} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{index}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{10}\PY{p}{]}\PY{p}{:}
+                 \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{,}\PY{n+nb}{int}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+                 
+             
+             
+             \PY{k}{return} \PY{n}{result}
+             
+         \PY{k}{def} \PY{n+nf}{findSimilarity}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{sample}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+         \PY{l+s+sd}{    This method find top 10 similar transaction for each transaction in the sample}
+         \PY{l+s+sd}{    and returns dataframe.}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+             \PY{n}{li}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{tid} \PY{o+ow}{in} \PY{n}{sample}\PY{o}{.}\PY{n}{index}\PY{p}{:}    \PY{c+c1}{\PYZsh{} for 100 points}
+                 \PY{n}{l}\PY{o}{=}\PY{p}{[}\PY{n}{tid}\PY{p}{,}\PY{n}{data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{tid}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
+         
+                 \PY{n}{l}\PY{o}{.}\PY{n}{extend}\PY{p}{(}\PY{n}{top10}\PY{p}{(}\PY{n}{tid}\PY{p}{,}\PY{n}{data}\PY{p}{)}\PY{p}{)}
+                 \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{l}\PY{p}{)}
+         
+             \PY{n}{result\PYZus{}df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{li}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction\PYZus{}class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t5}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t6}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t7}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t8}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t9}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t10}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         
+             \PY{k}{return} \PY{n}{result\PYZus{}df}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{result}\PY{o}{=}\PY{n}{findSimilarity}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{sample}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+/opt/conda/envs/py3.6/lib/python3.6/site-packages/ipykernel\_launcher.py:5: RuntimeWarning: invalid value encountered in arccos
+  """
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{result}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}18}]:}    transaction  transaction\_class                        t1  \textbackslash{}
+         0            0                  0   (0, 2, 0.0237353343897)   
+         1            1                  0    (0, 5, 0.768701164518)   
+         2            2                  0   (0, 0, 0.0237353343897)   
+         3            3                  0   (0, 2, 0.0305620152798)   
+         4            4                  0  (0, 51, 0.0501182369133)   
+         
+                                   t2                         t3  \textbackslash{}
+         0   (0, 51, 0.0359399147474)  (0, 164, 0.0376595073509)   
+         1    (0, 20, 0.779776537022)    (0, 12, 0.779803367384)   
+         2   (0, 51, 0.0281979252757)  (0, 164, 0.0288121842797)   
+         3   (0, 51, 0.0389222661251)  (0, 164, 0.0396330152771)   
+         4  (0, 164, 0.0517404219726)    (0, 0, 0.0528297430052)   
+         
+                                  t4                        t5  \textbackslash{}
+         0   (0, 3, 0.0397080188718)   (0, 4, 0.0528297430052)   
+         1    (0, 2, 0.782530229667)   (0, 51, 0.783338707682)   
+         2   (0, 3, 0.0305620152798)  (0, 89, 0.0514065648037)   
+         3   (0, 0, 0.0397080188718)  (0, 89, 0.0561100545498)   
+         4  (0, 89, 0.0561541708028)    (0, 2, 0.056783952728)   
+         
+                                  t6                        t7  \textbackslash{}
+         0  (0, 89, 0.0580634641408)    (0, 20, 0.07567636464)   
+         1  (0, 164, 0.783909043148)   (0, 89, 0.784274288393)   
+         2    (0, 4, 0.056783952728)  (0, 20, 0.0684922264926)   
+         3   (0, 4, 0.0598932093912)   (0, 20, 0.068138113654)   
+         4   (0, 3, 0.0598932093912)  (0, 20, 0.0679924634429)   
+         
+                                   t8                         t9  \textbackslash{}
+         0    (0, 8, 0.0947485982844)   (0, 12, 0.0951097299117)   
+         1     (0, 3, 0.787375742997)     (0, 0, 0.788748000693)   
+         2    (0, 12, 0.086483464085)    (0, 8, 0.0909512466903)   
+         3    (0, 8, 0.0872259025822)   (0, 12, 0.0880750449304)   
+         4  (0, 140, 0.0828696492217)  (0, 150, 0.0847161155849)   
+         
+                                  t10  
+         0  (0, 140, 0.0985190138579)  
+         1   (0, 150, 0.789548016068)  
+         2   (0, 140, 0.093603662507)  
+         3  (0, 140, 0.0933725082431)  
+         4    (0, 12, 0.085201106819)  
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{result}\PY{o}{.}\PY{n}{tail}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}19}]:}     transaction  transaction\_class                         t1  \textbackslash{}
+         95           95                  0  (0, 2677, 0.040226263837)   
+         96           96                  0   (0, 84, 0.0710625044389)   
+         97           97                  0  (0, 714, 0.0408336523342)   
+         98           98                  0  (0, 251, 0.0466450213338)   
+         99          541                  1  (0, 460, 0.0166922986392)   
+         
+                                     t2                          t3  \textbackslash{}
+         95  (0, 1641, 0.0431744779024)   (0, 159, 0.0432150827357)   
+         96    (0, 318, 0.073790798285)   (0, 119, 0.0738733680443)   
+         97   (0, 645, 0.0413378158211)    (0, 217, 0.041950824106)   
+         98   (0, 243, 0.0515992908774)   (0, 333, 0.0589672923647)   
+         99  (1, 8296, 0.0216110277492)  (1, 8615, 0.0217160642217)   
+         
+                                     t4                          t5  \textbackslash{}
+         95   (0, 129, 0.0436856175685)   (0, 192, 0.0447586823714)   
+         96   (0, 239, 0.0741257028008)     (0, 72, 0.077396514654)   
+         97  (0, 1154, 0.0424707933667)   (0, 401, 0.0425619058362)   
+         98   (0, 260, 0.0607472819025)   (0, 208, 0.0643456032789)   
+         99   (1, 9035, 0.021940381583)  (1, 8335, 0.0219718650971)   
+         
+                                     t6                          t7  \textbackslash{}
+         95   (0, 230, 0.0451058668679)   (0, 593, 0.0467195270938)   
+         96   (0, 268, 0.0789593229811)   (0, 341, 0.0794446861524)   
+         97   (0, 975, 0.0434620297165)  (0, 1298, 0.0435382686224)   
+         98   (0, 432, 0.0675092325415)  (0, 1300, 0.0678558786352)   
+         99  (1, 9252, 0.0220768521941)  (1, 9487, 0.0222108920308)   
+         
+                                      t8                          t9  \textbackslash{}
+         95    (0, 843, 0.0486878052336)   (0, 124, 0.0507052739904)   
+         96     (0, 81, 0.0799750108664)   (0, 842, 0.0804460532021)   
+         97  (0, 46841, 0.0437711420047)   (0, 485, 0.0438100697851)   
+         98    (0, 266, 0.0682828909291)    (0, 42, 0.0683198210954)   
+         99   (1, 9509, 0.0222138461766)  (1, 9179, 0.0223664265243)   
+         
+                                    t10  
+         95   (0, 344, 0.0512113405279)  
+         96   (0, 434, 0.0805112868277)  
+         97  (0, 1031, 0.0440519908616)  
+         98   (0, 906, 0.0683384731375)  
+         99  (1, 6717, 0.0225785468783)  
+\end{Verbatim}
+            
 
     % Add a bibliography block to the postdoc
     
