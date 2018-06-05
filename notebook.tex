@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{Linear\_algebra\_assignment}
+    \title{Logistic Regression}
     
     
     
@@ -280,854 +280,732 @@
     
 
     
+    \hypertarget{objective}{%
+\subsubsection{Objective:}\label{objective}}
+
+To classify a review(amazon fine food reviews) into negative or positive
+class using Naive Bayes algorithm.
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}2}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
-        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
-        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+{\color{incolor}In [{\color{incolor}41}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{feature\PYZus{}extraction}\PY{n+nn}{.}\PY{n+nn}{text} \PY{k}{import} \PY{n}{TfidfVectorizer}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{StandardScaler}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{linear\PYZus{}model} \PY{k}{import} \PY{n}{LogisticRegression}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{GridSearchCV}\PY{p}{,}\PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{,}\PY{n}{TimeSeriesSplit}\PY{p}{,}\PY{n}{RandomizedSearchCV}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{class\PYZus{}weight} \PY{k}{import} \PY{n}{compute\PYZus{}class\PYZus{}weight}\PY{p}{,}\PY{n}{compute\PYZus{}sample\PYZus{}weight}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{accuracy\PYZus{}score}
+         \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{sparse} \PY{k}{import} \PY{n}{csr\PYZus{}matrix}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics}\PY{n+nn}{.}\PY{n+nn}{pairwise} \PY{k}{import} \PY{n}{cosine\PYZus{}distances}\PY{p}{,}\PY{n}{euclidean\PYZus{}distances}\PY{p}{,}\PY{n}{cosine\PYZus{}similarity}
+         \PY{k+kn}{import} \PY{n+nn}{warnings}
+         \PY{n}{warnings}\PY{o}{.}\PY{n}{filterwarnings}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ignore}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{data}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{creditcard.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{}reading cleaned amazon review csv}
+        \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cleaned\PYZus{}amazon\PYZus{}reviews.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{df}\PY{o}{=}\PY{n}{df}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+        \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{df} \PY{c+c1}{\PYZsh{}here we can modify our sample size}
 \end{Verbatim}
 
-
-    \hypertarget{task-1}{%
-\subsection{Task 1}\label{task-1}}
-
-    \hypertarget{objective-given-a-datapointtransaction-classify-whether-a-transaction-is-fraud-or-not.}{%
-\paragraph{Objective : Given a datapoint(transaction) classify whether a
-transaction is fraud or
-not.}\label{objective-given-a-datapointtransaction-classify-whether-a-transaction-is-fraud-or-not.}}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}  \PY{c+c1}{\PYZsh{} sorting of dataframe for Time Based splitting}
 \end{Verbatim}
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}4}]:}    Time        V1        V2        V3        V4        V5        V6        V7  \textbackslash{}
-        0   0.0 -1.359807 -0.072781  2.536347  1.378155 -0.338321  0.462388  0.239599   
-        1   0.0  1.191857  0.266151  0.166480  0.448154  0.060018 -0.082361 -0.078803   
-        2   1.0 -1.358354 -1.340163  1.773209  0.379780 -0.503198  1.800499  0.791461   
-        3   1.0 -0.966272 -0.185226  1.792993 -0.863291 -0.010309  1.247203  0.237609   
-        4   2.0 -1.158233  0.877737  1.548718  0.403034 -0.407193  0.095921  0.592941   
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{} converting reviews to vector}
+        \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{=}\PY{p}{[}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of sentence to be used for countvectorizer}
+        \PY{k}{for} \PY{n}{sentence} \PY{o+ow}{in} \PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CleanText}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{:}
+            \PY{n}{li}\PY{o}{=}\PY{n}{sentence}
+            \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{li}\PY{p}{)}
         
-                 V8        V9  {\ldots}         V21       V22       V23       V24  \textbackslash{}
-        0  0.098698  0.363787  {\ldots}   -0.018307  0.277838 -0.110474  0.066928   
-        1  0.085102 -0.255425  {\ldots}   -0.225775 -0.638672  0.101288 -0.339846   
-        2  0.247676 -1.514654  {\ldots}    0.247998  0.771679  0.909412 -0.689281   
-        3  0.377436 -1.387024  {\ldots}   -0.108300  0.005274 -0.190321 -1.175575   
-        4 -0.270533  0.817739  {\ldots}   -0.009431  0.798278 -0.137458  0.141267   
+        \PY{n}{tfidf\PYZus{}model}\PY{o}{=}\PY{n}{TfidfVectorizer}\PY{p}{(}\PY{n}{ngram\PYZus{}range}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}using count\PYZhy{}BOW and 1 \PYZam{} 2 grams }
+        \PY{n}{tfidf\PYZus{}bow\PYZus{}review\PYZus{}matrix}\PY{o}{=}\PY{n}{tfidf\PYZus{}model}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{p}{)} \PY{c+c1}{\PYZsh{}training our model and converting text to vector}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{c+c1}{\PYZsh{} standardization of feature matrix}
+        \PY{n}{X}\PY{o}{=}\PY{n}{StandardScaler}\PY{p}{(}\PY{n}{with\PYZus{}mean}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{tfidf\PYZus{}bow\PYZus{}review\PYZus{}matrix}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} In LR we know for negative class we take \PYZhy{}1 and for positive class +1.}
+        \PY{n}{y}\PY{o}{=}\PY{n}{y}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{string}\PY{p}{:} \PY{l+m+mi}{1} \PY{k}{if} \PY{n}{string}\PY{o}{==}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{positive}\PY{l+s+s1}{\PYZsq{}} \PY{k}{else} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{X\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}test}\PY{o}{=}\PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,}\PY{n}{shuffle}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)} \PY{c+c1}{\PYZsh{} 70\PYZhy{}30 split without shuffling(used for TBS)}
+\end{Verbatim}
+
+
+    \hypertarget{using-grid-search}{%
+\subsubsection{Using Grid search}\label{using-grid-search}}
+
+    \hypertarget{using-l2-regularization}{%
+\paragraph{1) using L2 Regularization}\label{using-l2-regularization}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}42}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+         \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+         \PY{n}{c}\PY{o}{=}\PY{p}{[}\PY{l+m+mf}{0.0001}\PY{p}{,}\PY{l+m+mf}{0.00001}\PY{p}{,}\PY{l+m+mf}{0.000001}\PY{p}{,}\PY{l+m+mf}{0.0000001}\PY{p}{,}\PY{l+m+mf}{0.00000001}\PY{p}{,}\PY{l+m+mf}{0.000000001}\PY{p}{,}\PY{l+m+mf}{0.0000000001}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of c to passed to the LR model}
+         \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+         \PY{n}{gs}\PY{o}{=}\PY{n}{GridSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{c}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+         \PY{n}{gs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}42}]:} GridSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3ffe484ceb48>,
+                error\_score='raise',
+                estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                   intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                   penalty='l2', random\_state=0, solver='liblinear', tol=0.0001,
+                   verbose=0, warm\_start=False),
+                fit\_params=None, iid=True, n\_jobs=1,
+                param\_grid=\{'C': [0.0001, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10]\},
+                pre\_dispatch='2*n\_jobs', refit=True, return\_train\_score=True,
+                scoring='accuracy', verbose=0)
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}29}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+         \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+         \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}29}]:} 0.88938416829172595
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}31}]:} \PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}31}]:} \{'C': 1e-07\}
+\end{Verbatim}
+            
+    \hypertarget{using-l1-regularization}{%
+\paragraph{2) using L1 Regularization}\label{using-l1-regularization}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}129}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{penalty}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{l1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+          \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+          \PY{n}{c}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mf}{0.01}\PY{p}{,}\PY{l+m+mf}{0.001}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of c to passed to the LR model}
+          \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+          \PY{n}{gs}\PY{o}{=}\PY{n}{GridSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{c}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+          \PY{n}{gs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}129}]:} GridSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3fff0083c570>,
+                 error\_score='raise',
+                 estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                    intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                    penalty='l1', random\_state=0, solver='liblinear', tol=0.0001,
+                    verbose=0, warm\_start=False),
+                 fit\_params=None, iid=True, n\_jobs=1,
+                 param\_grid=\{'C': [100, 10, 1, 0.1, 0.01, 0.001]\},
+                 pre\_dispatch='2*n\_jobs', refit=True, return\_train\_score=True,
+                 scoring='accuracy', verbose=0)
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}130}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+          \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+          \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}130}]:} 0.8491609411664528
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}131}]:} \PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}131}]:} \{'C': 0.01\}
+\end{Verbatim}
+            
+    \hypertarget{using-random-search}{%
+\subsubsection{Using Random Search}\label{using-random-search}}
+
+    \hypertarget{using-l2-regularization}{%
+\paragraph{1) using L2 Regularization}\label{using-l2-regularization}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}132}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+          \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+          \PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mf}{0.00000001}\PY{p}{,}\PY{l+m+mf}{0.000001}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}
+          \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+          \PY{n}{rs}\PY{o}{=}\PY{n}{RandomizedSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}distributions}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{param\PYZus{}grid}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+          \PY{n}{rs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}132}]:} RandomizedSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3fff0b876728>,
+                    error\_score='raise',
+                    estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                    intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                    penalty='l2', random\_state=0, solver='liblinear', tol=0.0001,
+                    verbose=0, warm\_start=False),
+                    fit\_params=None, iid=True, n\_iter=10, n\_jobs=1,
+                    param\_distributions=\{'C': array([  4.96788e-07,   8.81614e-07,   2.06406e-07,   6.43269e-07,
+                   8.39432e-07,   5.33538e-07,   4.41028e-07,   2.38218e-08,
+                   4.05763e-07,   7.12149e-07,   2.13623e-07,   6.39345e-07,
+                   6.08885e-07,   3.15056e-07,   8.01074e-07,   7.61407e-07,
+                   1.15046e-07,   1.39763e-07,   3.42908e-07,   5.00267e-07])\},
+                    pre\_dispatch='2*n\_jobs', random\_state=None, refit=True,
+                    return\_train\_score=True, scoring='accuracy', verbose=0)
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}133}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{rs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+          \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+          \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}133}]:} 0.88284830761180488
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}134}]:} \PY{n}{rs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}134}]:} \{'C': 1.3976274849389749e-07\}
+\end{Verbatim}
+            
+    \hypertarget{using-l1-regularization}{%
+\paragraph{2) using L1 Regularization}\label{using-l1-regularization}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}144}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{penalty}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{l1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+          \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+          \PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mf}{0.001}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}
+          \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+          \PY{n}{rs}\PY{o}{=}\PY{n}{RandomizedSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}distributions}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{param\PYZus{}grid}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+          \PY{n}{rs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}144}]:} RandomizedSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3ffef6264fc0>,
+                    error\_score='raise',
+                    estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                    intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                    penalty='l1', random\_state=0, solver='liblinear', tol=0.0001,
+                    verbose=0, warm\_start=False),
+                    fit\_params=None, iid=True, n\_iter=10, n\_jobs=1,
+                    param\_distributions=\{'C': array([ 0.88585,  0.17497,  0.93794,  0.49264,  0.2191 ,  0.14032,
+                  0.24433,  0.99066,  0.45169,  0.69966,  0.79476,  0.2439 ,
+                  0.96409,  0.09913,  0.49571,  0.94768,  0.30067,  0.34672,
+                  0.45416,  0.32356])\},
+                    pre\_dispatch='2*n\_jobs', random\_state=None, refit=True,
+                    return\_train\_score=True, scoring='accuracy', verbose=0)
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}145}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{rs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+          \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+          \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}145}]:} 0.82299552894908301
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}146}]:} \PY{n}{rs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}146}]:} \{'C': 0.94768333445684139\}
+\end{Verbatim}
+            
+    \hypertarget{increase-in-sparsitydecrease-in-non-zero-element-with-increase-in-lambdadecrese-in-c-parameter-in-l1-regularizatation}{%
+\subsubsection{Increase in sparsity(decrease in non zero element) with
+increase in Lambda(decrese in C parameter) in L1
+regularizatation}\label{increase-in-sparsitydecrease-in-non-zero-element-with-increase-in-lambdadecrese-in-c-parameter-in-l1-regularizatation}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}143}]:} \PY{n}{c\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mf}{0.01}\PY{p}{,}\PY{l+m+mf}{0.001}\PY{p}{,}\PY{l+m+mf}{0.0001}\PY{p}{]}
+          \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+          \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+          \PY{k}{for} \PY{n}{c} \PY{o+ow}{in} \PY{n}{c\PYZus{}list}\PY{p}{:}
+              \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{penalty}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{l1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{C}\PY{o}{=}\PY{n}{c}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{lr\PYZus{}model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+              \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{lr\PYZus{}model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+              \PY{n}{error}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+              \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lambda= }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{c}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ no of non\PYZhy{}zero in weight vector}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{count\PYZus{}nonzero}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{)} \PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{error= }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{error}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+lambda=  0.01  no of non-zero in weight vector 773201 error=  0.204399925328
+lambda=  0.1  no of non-zero in weight vector 458474 error=  0.218262914994
+lambda=  1.0  no of non-zero in weight vector 200697 error=  0.177229013404
+lambda=  10.0  no of non-zero in weight vector 158700 error=  0.170447921502
+lambda=  100.0  no of non-zero in weight vector 125392 error=  0.150839058834
+lambda=  1000.0  no of non-zero in weight vector 21333 error=  0.111753077968
+lambda=  10000.0  no of non-zero in weight vector 34 error=  0.248966762935
+
+    \end{Verbatim}
+
+    \hypertarget{feature-collinearity-test-perbutation-test}{%
+\subsubsection{feature collinearity test-perbutation
+test}\label{feature-collinearity-test-perbutation-test}}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cleaned\PYZus{}amazon\PYZus{}reviews.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{df}\PY{o}{=}\PY{n}{df}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{}for balanced dataset where n=\PYZsh{}for each class}
+        \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{2500}
+        \PY{n}{df\PYZus{}positive}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{positive}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+        \PY{n}{df\PYZus{}negative}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{negative}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+        \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{p}{[}\PY{n}{df\PYZus{}positive}\PY{p}{,}\PY{n}{df\PYZus{}negative}\PY{p}{]}\PY{p}{)}
+        \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}  \PY{c+c1}{\PYZsh{}dataframe being sorted based by time }
         
-                V25       V26       V27       V28  Amount  Class  
-        0  0.128539 -0.189115  0.133558 -0.021053  149.62      0  
-        1  0.167170  0.125895 -0.008983  0.014724    2.69      0  
-        2 -0.327642 -0.139097 -0.055353 -0.059752  378.66      0  
-        3  0.647376 -0.221929  0.062723  0.061458  123.50      0  
-        4 -0.206010  0.502292  0.219422  0.215153   69.99      0  
+        \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{=}\PY{p}{[}\PY{p}{]} \PY{c+c1}{\PYZsh{} list of sentences }
+        \PY{k}{for} \PY{n}{sentence} \PY{o+ow}{in} \PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CleanText}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{:}
+            \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{sentence}\PY{p}{)}
+        \PY{n}{tfidf\PYZus{}model}\PY{o}{=}\PY{n}{TfidfVectorizer}\PY{p}{(}\PY{n}{ngram\PYZus{}range}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}    
+        \PY{n}{tfidf\PYZus{}review\PYZus{}matrix}\PY{o}{=}\PY{n}{tfidf\PYZus{}model}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{p}{)} \PY{c+c1}{\PYZsh{}training our tf\PYZhy{}idf model}
         
-        [5 rows x 31 columns]
+        \PY{n}{X}\PY{o}{=}\PY{n}{StandardScaler}\PY{p}{(}\PY{n}{with\PYZus{}mean}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{tfidf\PYZus{}review\PYZus{}matrix}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} In LR we know for negative class we take \PYZhy{}1 and for positive class +1.}
+        \PY{n}{y}\PY{o}{=}\PY{n}{y}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{string}\PY{p}{:} \PY{l+m+mi}{1} \PY{k}{if} \PY{n}{string}\PY{o}{==}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{positive}\PY{l+s+s1}{\PYZsq{}} \PY{k}{else} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{X\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}test}\PY{o}{=}\PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,}\PY{n}{shuffle}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)} \PY{c+c1}{\PYZsh{} 70\PYZhy{}30 split without shuffling(used for TBS)}
 \end{Verbatim}
-            
+
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{data}\PY{o}{.}\PY{n}{shape}
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+        \PY{n}{c}\PY{o}{=}\PY{p}{[}\PY{l+m+mf}{0.0001}\PY{p}{,}\PY{l+m+mf}{0.00001}\PY{p}{,}\PY{l+m+mf}{0.000001}\PY{p}{,}\PY{l+m+mf}{0.0000001}\PY{p}{,}\PY{l+m+mf}{0.00000001}\PY{p}{,}\PY{l+m+mf}{0.000000001}\PY{p}{,}\PY{l+m+mf}{0.0000000001}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of c to passed to the LR model}
+        \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+        \PY{n}{gs}\PY{o}{=}\PY{n}{GridSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{c}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+        \PY{n}{gs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}5}]:} (284807, 31)
+{\color{outcolor}Out[{\color{outcolor}5}]:} GridSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3ffefeea8308>,
+               error\_score='raise',
+               estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                  intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                  penalty='l2', random\_state=0, solver='liblinear', tol=0.0001,
+                  verbose=0, warm\_start=False),
+               fit\_params=None, iid=True, n\_jobs=1,
+               param\_grid=\{'C': [0.0001, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10]\},
+               pre\_dispatch='2*n\_jobs', refit=True, return\_train\_score=True,
+               scoring='accuracy', verbose=0)
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{unique}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+        \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+        \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}6}]:} array([0, 1])
+{\color{outcolor}Out[{\color{outcolor}6}]:} 0.83675213675213689
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{nunique}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}7}]:} 2
+{\color{outcolor}Out[{\color{outcolor}7}]:} \{'C': 1e-07\}
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{w1}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}estimator\PYZus{}}\PY{o}{.}\PY{n}{coef\PYZus{}} \PY{c+c1}{\PYZsh{} storing w as w1 before adding noise to the data}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{X\PYZus{}noise}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{+}\PY{n}{csr\PYZus{}matrix}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.10}\PY{p}{,}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{} addding noise to the data}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+         \PY{n}{tscv}\PY{o}{=}\PY{n}{TimeSeriesSplit}\PY{p}{(}\PY{n}{n\PYZus{}splits}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)} \PY{c+c1}{\PYZsh{} timeseries split for using timeseries based cross\PYZhy{}validation}
+         \PY{n}{c}\PY{o}{=}\PY{p}{[}\PY{l+m+mf}{0.0001}\PY{p}{,}\PY{l+m+mf}{0.00001}\PY{p}{,}\PY{l+m+mf}{0.000001}\PY{p}{,}\PY{l+m+mf}{0.0000001}\PY{p}{,}\PY{l+m+mf}{0.00000001}\PY{p}{,}\PY{l+m+mf}{0.000000001}\PY{p}{,}\PY{l+m+mf}{0.0000000001}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of c to passed to the LR model}
+         \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+         \PY{n}{gs}\PY{o}{=}\PY{n}{GridSearchCV}\PY{p}{(}\PY{n}{lr\PYZus{}model}\PY{p}{,}\PY{n}{param\PYZus{}grid}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{C}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{c}\PY{p}{\PYZcb{}}\PY{p}{,}\PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{cv}\PY{o}{=}\PY{n}{tscv}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}\PY{p}{)}
+         \PY{n}{gs}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}noise}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}8}]:} 0    284315
-        1       492
-        Name: Class, dtype: int64
+{\color{outcolor}Out[{\color{outcolor}11}]:} GridSearchCV(cv=<generator object TimeSeriesSplit.split at 0x3fff01cb6eb8>,
+                error\_score='raise',
+                estimator=LogisticRegression(C=1.0, class\_weight=None, dual=False, fit\_intercept=True,
+                   intercept\_scaling=1, max\_iter=100, multi\_class='ovr', n\_jobs=-1,
+                   penalty='l2', random\_state=0, solver='liblinear', tol=0.0001,
+                   verbose=0, warm\_start=False),
+                fit\_params=None, iid=True, n\_jobs=1,
+                param\_grid=\{'C': [0.0001, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10]\},
+                pre\_dispatch='2*n\_jobs', refit=True, return\_train\_score=True,
+                scoring='accuracy', verbose=0)
 \end{Verbatim}
             
-    \hypertarget{basic-info-about-creditcard-data-set}{%
-\paragraph{Basic info about creditcard data
-set:}\label{basic-info-about-creditcard-data-set}}
-
-1.no of features=30
-
-2.no of class=2,class 0 (not fraud) and class 1 (fraud)
-
-3.no of datapoints/observation =284807
-
-4.no of datapoint labeled 0 =284315
-
-5.no of datapoint labeled 1=492
-
-Thus, it's a unbalanced dataset.
-
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{data}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{}no missing values }
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{y\PYZus{}predict}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+         \PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}test}\PY{p}{)}
+         \PY{n}{accuracy\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}predict}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}test\PYZus{}sample\PYZus{}weight}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}9}]:} Time      0
-        V1        0
-        V2        0
-        V3        0
-        V4        0
-        V5        0
-        V6        0
-        V7        0
-        V8        0
-        V9        0
-        V10       0
-        V11       0
-        V12       0
-        V13       0
-        V14       0
-        V15       0
-        V16       0
-        V17       0
-        V18       0
-        V19       0
-        V20       0
-        V21       0
-        V22       0
-        V23       0
-        V24       0
-        V25       0
-        V26       0
-        V27       0
-        V28       0
-        Amount    0
-        Class     0
-        dtype: int64
+{\color{outcolor}Out[{\color{outcolor}12}]:} 0.83643162393162407
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{data}\PY{o}{.}\PY{n}{info}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{} getting basic info about the dataset}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 284807 entries, 0 to 284806
-Data columns (total 31 columns):
-Time      284807 non-null float64
-V1        284807 non-null float64
-V2        284807 non-null float64
-V3        284807 non-null float64
-V4        284807 non-null float64
-V5        284807 non-null float64
-V6        284807 non-null float64
-V7        284807 non-null float64
-V8        284807 non-null float64
-V9        284807 non-null float64
-V10       284807 non-null float64
-V11       284807 non-null float64
-V12       284807 non-null float64
-V13       284807 non-null float64
-V14       284807 non-null float64
-V15       284807 non-null float64
-V16       284807 non-null float64
-V17       284807 non-null float64
-V18       284807 non-null float64
-V19       284807 non-null float64
-V20       284807 non-null float64
-V21       284807 non-null float64
-V22       284807 non-null float64
-V23       284807 non-null float64
-V24       284807 non-null float64
-V25       284807 non-null float64
-V26       284807 non-null float64
-V27       284807 non-null float64
-V28       284807 non-null float64
-Amount    284807 non-null float64
-Class     284807 non-null int64
-dtypes: float64(30), int64(1)
-memory usage: 67.4 MB
-
-    \end{Verbatim}
-
-    \hypertarget{performing-univariate-analysis}{%
-\subsubsection{Performing Univariate
-Analysis}\label{performing-univariate-analysis}}
-
-    \hypertarget{lets-start-univariate-analysis-by-ploting-pdf-for-each-of-the-feature}{%
-\paragraph{Lets start univariate analysis by ploting PDF for each of the
-feature:}\label{lets-start-univariate-analysis-by-ploting-pdf-for-each-of-the-feature}}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}params\PYZus{}}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}11}]:} <matplotlib.legend.Legend at 0x3fff38e8a5f8>
+{\color{outcolor}Out[{\color{outcolor}13}]:} \{'C': 1e-07\}
 \end{Verbatim}
             
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_14_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{w2}\PY{o}{=}\PY{n}{gs}\PY{o}{.}\PY{n}{best\PYZus{}estimator\PYZus{}}\PY{o}{.}\PY{n}{coef\PYZus{}} \PY{c+c1}{\PYZsh{} storing w as w2 before adding noise to the data}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{dist}\PY{o}{=}\PY{n}{DistanceMetric}\PY{o}{.}\PY{n}{get\PYZus{}metric}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{euclidean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{pairwise}\PY{p}{(}\PY{n}{w1}\PY{p}{,}\PY{n}{w2}\PY{p}{)} \PY{c+c1}{\PYZsh{}}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{dist}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}12}]:} <matplotlib.legend.Legend at 0x3fff38f0b0b8>
+{\color{outcolor}Out[{\color{outcolor}19}]:} array([[ 0.00011359]])
 \end{Verbatim}
             
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_15_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
-         \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}27}]:} \PY{n}{cosine\PYZus{}similarity}\PY{p}{(}\PY{n}{w1}\PY{p}{,}\PY{n}{w2}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}13}]:} <matplotlib.legend.Legend at 0x3fff3b7225c0>
+{\color{outcolor}Out[{\color{outcolor}27}]:} array([[ 0.99538119]])
 \end{Verbatim}
             
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_16_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
+    \hypertarget{result}{%
+\subsubsection{Result:}\label{result}}
+
+\begin{verbatim}
+As we can see  that cosine_similarity(w1,w2)=0.99538119 which is approx equal to 1 we can say that mullticollineariry is not present in the data and if it is there it is very very small and hence we can use weight vector as feature importance.
+\end{verbatim}
+
+    \hypertarget{feature-imporantance}{%
+\subsubsection{Feature Imporantance}\label{feature-imporantance}}
+
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}14}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
-             \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
-             \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
-             \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}34}]:} \PY{c+c1}{\PYZsh{}reading cleaned amazon review csv}
+         \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cleaned\PYZus{}amazon\PYZus{}reviews.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{df}\PY{o}{=}\PY{n}{df}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+         \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{df} \PY{c+c1}{\PYZsh{}here we can modify our sample size}
+         \PY{n}{df\PYZus{}sample}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}  \PY{c+c1}{\PYZsh{} sorting of dataframe for Time Based splitting}
+         \PY{c+c1}{\PYZsh{} converting reviews to vector}
+         \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{=}\PY{p}{[}\PY{p}{]} \PY{c+c1}{\PYZsh{}list of sentence to be used for countvectorizer}
+         \PY{k}{for} \PY{n}{sentence} \PY{o+ow}{in} \PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CleanText}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{:}
+             \PY{n}{li}\PY{o}{=}\PY{n}{sentence}
+             \PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{li}\PY{p}{)}
+         
+         \PY{n}{tfidf\PYZus{}model}\PY{o}{=}\PY{n}{TfidfVectorizer}\PY{p}{(}\PY{n}{ngram\PYZus{}range}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}using count\PYZhy{}BOW and 1 \PYZam{} 2 grams }
+         \PY{n}{tfidf\PYZus{}bow\PYZus{}review\PYZus{}matrix}\PY{o}{=}\PY{n}{tfidf\PYZus{}model}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{list\PYZus{}of\PYZus{}sentence}\PY{p}{)} \PY{c+c1}{\PYZsh{}training our model and converting text to vector}
+         
+         \PY{c+c1}{\PYZsh{} standardization of feature matrix}
+         \PY{n}{X}\PY{o}{=}\PY{n}{StandardScaler}\PY{p}{(}\PY{n}{with\PYZus{}mean}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{tfidf\PYZus{}bow\PYZus{}review\PYZus{}matrix}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{} In LR we know for negative class we take \PYZhy{}1 and for positive class +1.}
+         \PY{n}{y}\PY{o}{=}\PY{n}{y}\PY{o}{=}\PY{n}{df\PYZus{}sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{string}\PY{p}{:} \PY{l+m+mi}{1} \PY{k}{if} \PY{n}{string}\PY{o}{==}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{positive}\PY{l+s+s1}{\PYZsq{}} \PY{k}{else} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+         
+         \PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{X\PYZus{}test}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}test}\PY{o}{=}\PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,}\PY{n}{shuffle}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)} \PY{c+c1}{\PYZsh{} 70\PYZhy{}30 split without shuffling(used for TBS)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-/opt/conda/envs/py3.6/lib/python3.6/site-packages/matplotlib/pyplot.py:528: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max\_open\_warning`).
-  max\_open\_warning, RuntimeWarning)
-
-    \end{Verbatim}
-
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_2.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_3.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_4.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_5.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_6.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_7.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_8.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_9.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_10.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_11.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_12.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_13.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_14.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_15.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_16.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_17.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_18.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_19.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_20.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_21.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_22.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_23.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_24.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_25.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_26.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_27.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_28.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \hypertarget{conclusion-of-pdf-we-saw-for-each-feature-both-classes-are-overlapping-and-almost-fraud-and-non-fraud-are-insepreable-we-can-verify-by-ploting-box-plot}{%
-\subparagraph{Conclusion of pdf :we saw for each feature both classes
-are overlapping and almost fraud and non fraud are insepreable, we can
-verify by ploting box
-plot}\label{conclusion-of-pdf-we-saw-for-each-feature-both-classes-are-overlapping-and-almost-fraud-and-non-fraud-are-insepreable-we-can-verify-by-ploting-box-plot}}
-
-    \hypertarget{lets-move-further-with-box-plot}{%
-\paragraph{let's move further with box plot
-:}\label{lets-move-further-with-box-plot}}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}35}]:} \PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}15}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x3fff382f82e8>
-\end{Verbatim}
-            
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
-         \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}16}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x3fff27057748>
-\end{Verbatim}
-            
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
-             \PY{n}{fg}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
-             \PY{n}{fg}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-/opt/conda/envs/py3.6/lib/python3.6/site-packages/seaborn/axisgrid.py:703: UserWarning: Using the boxplot function without specifying `order` is likely to produce an incorrect plot.
-  warnings.warn(warning)
-/opt/conda/envs/py3.6/lib/python3.6/site-packages/matplotlib/pyplot.py:528: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max\_open\_warning`).
-  max\_open\_warning, RuntimeWarning)
-
-    \end{Verbatim}
-
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_2.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_3.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_4.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_5.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_6.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_7.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_8.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_9.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_10.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_11.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_12.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_13.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_14.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_15.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_16.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_17.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_18.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_19.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_20.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_21.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_22.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_23.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_24.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_25.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_26.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_27.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_28.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \#\#\#\#\# Coclusion of boxplot: we saw in each of box plot for
-features, almost 30-40 \% of data are overlapping thus classes cannot be
-well seperated.
-
-    \hypertarget{conclusion-of-univariate-analysis-so-as-we-saw-in-kde-plot-and-box-plot-30-40-of-data-are-overlapping-thus-classes-cannot-be-well-sepearated-with-good-accuracy-by-considering-each-feature-alone.}{%
-\paragraph{Conclusion of univariate analysis: So as we saw in kde plot
-and box plot , 30\%-40\% of data are overlapping , thus classes cannot
-be well sepearated with good accuracy by considering each feature
-alone.}\label{conclusion-of-univariate-analysis-so-as-we-saw-in-kde-plot-and-box-plot-30-40-of-data-are-overlapping-thus-classes-cannot-be-well-sepearated-with-good-accuracy-by-considering-each-feature-alone.}}
-
-    \hypertarget{bivariate-analysis}{%
-\paragraph{BiVariate Analysis}\label{bivariate-analysis}}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{} Plotting scatter plots between some feaures as for 30 features , pair plot would be very large so we can just plot by picking features randomly}
-        
-        \PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}\PYZbs{}
-        \PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}4}]:} <seaborn.axisgrid.FacetGrid at 0x3fff30d58f98>
-\end{Verbatim}
-            
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_26_1.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}20}]:} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{28}\PY{p}{)}\PY{p}{:}
-             \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{29}\PY{p}{)}\PY{p}{:}
-                 \PY{n}{plt}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
-                 \PY{n}{sns}\PY{o}{.}\PY{n}{FacetGrid}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}\PYZbs{}
-                 \PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{V}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{j}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_27_0.png}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \hypertarget{conclustion-of-eda-we-saw-by-univariate-analysis-and-bivariate-analysis-that-it-is-very-difficult-to-classify-transactionsfraud-or-not-by-considering-only-1-or-2-feature-at-a-time-with-good-accuracy.-so-may-be-considering-all-features-we-would-be-able-to-classify-fraud-transaction-from-non-fraud-transaction.}{%
-\paragraph{Conclustion of EDA : we saw by univariate analysis and
-bivariate analysis , that it is very difficult to classify
-transactions(fraud or not ) by considering only 1 or 2 feature at a time
-with good accuracy. so may be considering all features we would be able
-to classify fraud transaction from non-fraud
-transaction.}\label{conclustion-of-eda-we-saw-by-univariate-analysis-and-bivariate-analysis-that-it-is-very-difficult-to-classify-transactionsfraud-or-not-by-considering-only-1-or-2-feature-at-a-time-with-good-accuracy.-so-may-be-considering-all-features-we-would-be-able-to-classify-fraud-transaction-from-non-fraud-transaction.}}
-
-    \hypertarget{task2}{%
-\subsection{Task2}\label{task2}}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}11}]:} \PY{c+c1}{\PYZsh{}calculating the simalirty metric}
-         \PY{k}{def} \PY{n+nf}{similarity}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{b}\PY{p}{)}\PY{p}{:}
-                 \PY{n}{alength}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{a}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-                 \PY{n}{blength}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{b}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-                 \PY{k}{return} \PY{n}{np}\PY{o}{.}\PY{n}{arccos}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{b}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{alength}\PY{o}{*}\PY{n}{blength}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}12}]:} \PY{c+c1}{\PYZsh{} calculation the ratio of class }
-         \PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
-         \PY{n}{percent\PYZus{}label\PYZus{}0}\PY{o}{=}\PY{p}{(}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{/}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{p}{)}
-         \PY{n}{percent\PYZus{}label\PYZus{}1}\PY{o}{=}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{n}{count\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}
-         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:.4f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{percent\PYZus{}label\PYZus{}0}\PY{p}{)}\PY{p}{)}
-         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:.4f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{percent\PYZus{}label\PYZus{}1}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-0.9983
-0.0017
-
-    \end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}13}]:} \PY{c+c1}{\PYZsh{}creating sample of 500 rows having  same class proportion as in complete dataset.}
-         \PY{n}{data\PYZus{}class0}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{]}
-         \PY{n}{data\PYZus{}class1}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{]}
-         \PY{n}{sample}\PY{o}{=}\PY{n}{data\PYZus{}class0}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{l+m+mi}{99}\PY{p}{,}\PY{p}{:}\PY{p}{]}
-         \PY{n}{sample}\PY{o}{=}\PY{n}{sample}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data\PYZus{}class1}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{]}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{sample}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}14}]:} 0.0    99
-         1.0     1
-         Name: Class, dtype: int64
+{\color{outcolor}Out[{\color{outcolor}35}]:} (230100, 3178748)
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{k}{def} \PY{n+nf}{top10}\PY{p}{(}\PY{n}{query\PYZus{}id}\PY{p}{,}\PY{n}{dataset}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    this method finds top 10 similar transaction}
-         \PY{l+s+sd}{    }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{n}{li}\PY{o}{=}\PY{p}{[}\PY{p}{]}
-             \PY{n}{result}\PY{o}{=}\PY{p}{[}\PY{p}{]}
-             \PY{k}{for} \PY{n}{current\PYZus{}id} \PY{o+ow}{in} \PY{n}{dataset}\PY{o}{.}\PY{n}{index}\PY{p}{:} \PY{c+c1}{\PYZsh{} looping over all the id in the dataset}
-                 \PY{k}{if}\PY{p}{(}\PY{n}{current\PYZus{}id}\PY{o}{==}\PY{n}{query\PYZus{}id}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{} skipping same row in dataset}
-                     \PY{k}{continue}
-                 \PY{k}{else}\PY{p}{:}
-                     \PY{n}{sim}\PY{o}{=}\PY{n}{similarity}\PY{p}{(}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{query\PYZus{}id}\PY{p}{]}\PY{p}{,}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{current\PYZus{}id}\PY{p}{]}\PY{p}{)}
-                     \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{[}\PY{n}{dataset}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{current\PYZus{}id}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{current\PYZus{}id}\PY{p}{,}\PY{n}{sim}\PY{p}{]}\PY{p}{)} \PY{c+c1}{\PYZsh{} tuple of (class of current\PYZus{}id, current\PYZus{}id,similarity value  )}
-                     
+{\color{incolor}In [{\color{incolor}38}]:} \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{100} \PY{c+c1}{\PYZsh{}top n features }
+         \PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{o}{=}\PY{n}{compute\PYZus{}sample\PYZus{}weight}\PY{p}{(}\PY{n}{class\PYZus{}weight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{balanced}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{y}\PY{o}{=}\PY{n}{y\PYZus{}train}\PY{p}{)}
+         \PY{n}{lr\PYZus{}model}\PY{o}{=}\PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{C}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}07}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)} \PY{c+c1}{\PYZsh{} training the model for Weight vector}
+         \PY{n}{lr\PYZus{}model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{y\PYZus{}train}\PY{p}{,}\PY{n}{sample\PYZus{}weight}\PY{o}{=}\PY{n}{y\PYZus{}train\PYZus{}sample\PYZus{}weight}\PY{p}{)}
+         
+         \PY{n}{di\PYZus{}positive}\PY{o}{=}\PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}\PY{c+c1}{\PYZsh{}dict for storing key as +ve w components  and value as index corrosponding to that component}
+         \PY{n}{di\PYZus{}negative}\PY{o}{=}\PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}\PY{c+c1}{\PYZsh{}dict for storing key as \PYZhy{}ve w components  and value as index corrosponding to that component}
+         
+         \PY{n}{li}\PY{o}{=}\PY{n}{lr\PYZus{}model}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{]}
+         \PY{n}{feature\PYZus{}name}\PY{o}{=}\PY{n}{tfidf\PYZus{}model}\PY{o}{.}\PY{n}{get\PYZus{}feature\PYZus{}names}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{} features name }
+         \PY{k}{for} \PY{n}{value}\PY{p}{,}\PY{n}{key} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{li}\PY{p}{)}\PY{p}{:}
+             \PY{k}{if} \PY{n}{key}\PY{o}{\PYZgt{}}\PY{l+m+mi}{0}\PY{p}{:}
+                 \PY{n}{di\PYZus{}positive}\PY{p}{[}\PY{n}{key}\PY{p}{]}\PY{o}{=}\PY{n}{value}
+             \PY{k}{else}\PY{p}{:}
+                 \PY{n}{di\PYZus{}negative}\PY{p}{[}\PY{n+nb}{abs}\PY{p}{(}\PY{n}{key}\PY{p}{)}\PY{p}{]}\PY{o}{=}\PY{n}{value}
+         \PY{n}{top\PYZus{}positive\PYZus{}features}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         \PY{n}{top\PYZus{}negative\PYZus{}features}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         \PY{k}{for} \PY{n}{key} \PY{o+ow}{in} \PY{n+nb}{sorted}\PY{p}{(}\PY{n}{di\PYZus{}positive}\PY{p}{,}\PY{n}{reverse}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{[}\PY{p}{:}\PY{n}{n}\PY{p}{]}\PY{p}{:} \PY{c+c1}{\PYZsh{}sorted the dict in descending order to get  n imp +ve weights components}
+             \PY{n}{index}\PY{o}{=}\PY{n}{di\PYZus{}positive}\PY{p}{[}\PY{n}{key}\PY{p}{]} \PY{c+c1}{\PYZsh{}fetching the}
+             \PY{n}{top\PYZus{}positive\PYZus{}features}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{feature\PYZus{}name}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{)}
              
-             \PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{li}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction\PYZus{}class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{similarity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-             \PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{similarity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,}\PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
-             
-             
-             \PY{k}{for} \PY{n}{index} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{index}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{10}\PY{p}{]}\PY{p}{:}
-                 \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{,}\PY{n+nb}{int}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-                 
-             
-             
-             \PY{k}{return} \PY{n}{result}
-             
-         \PY{k}{def} \PY{n+nf}{findSimilarity}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{sample}\PY{p}{)}\PY{p}{:}
-             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
-         \PY{l+s+sd}{    This method find top 10 similar transaction for each transaction in the sample}
-         \PY{l+s+sd}{    and returns dataframe.}
-         \PY{l+s+sd}{    }
-         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
-             \PY{n}{li}\PY{o}{=}\PY{p}{[}\PY{p}{]}
-             \PY{k}{for} \PY{n}{tid} \PY{o+ow}{in} \PY{n}{sample}\PY{o}{.}\PY{n}{index}\PY{p}{:}    \PY{c+c1}{\PYZsh{} for 100 points}
-                 \PY{n}{l}\PY{o}{=}\PY{p}{[}\PY{n}{tid}\PY{p}{,}\PY{n}{data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{tid}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
-         
-                 \PY{n}{l}\PY{o}{.}\PY{n}{extend}\PY{p}{(}\PY{n}{top10}\PY{p}{(}\PY{n}{tid}\PY{p}{,}\PY{n}{data}\PY{p}{)}\PY{p}{)}
-                 \PY{n}{li}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{l}\PY{p}{)}
-         
-             \PY{n}{result\PYZus{}df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{li}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{transaction\PYZus{}class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t5}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t6}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t7}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t8}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t9}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t10}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-         
-             \PY{k}{return} \PY{n}{result\PYZus{}df}
+         \PY{k}{for} \PY{n}{key} \PY{o+ow}{in} \PY{n+nb}{sorted}\PY{p}{(}\PY{n}{di\PYZus{}negative}\PY{p}{,}\PY{n}{reverse}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{[}\PY{p}{:}\PY{n}{n}\PY{p}{]}\PY{p}{:} \PY{c+c1}{\PYZsh{}sorted the dict in descending order to get  n imp \PYZhy{}ve weights components}
+             \PY{n}{index}\PY{o}{=}\PY{n}{di\PYZus{}negative}\PY{p}{[}\PY{n}{key}\PY{p}{]} \PY{c+c1}{\PYZsh{}fetching the}
+             \PY{n}{top\PYZus{}negative\PYZus{}features}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{feature\PYZus{}name}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{result}\PY{o}{=}\PY{n}{findSimilarity}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{sample}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-/opt/conda/envs/py3.6/lib/python3.6/site-packages/ipykernel\_launcher.py:5: RuntimeWarning: invalid value encountered in arccos
-  """
-
-    \end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{result}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}39}]:} \PY{n}{top\PYZus{}positive\PYZus{}features} \PY{c+c1}{\PYZsh{} positive features}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}18}]:}    transaction  transaction\_class                        t1  \textbackslash{}
-         0            0                  0   (0, 2, 0.0237353343897)   
-         1            1                  0    (0, 5, 0.768701164518)   
-         2            2                  0   (0, 0, 0.0237353343897)   
-         3            3                  0   (0, 2, 0.0305620152798)   
-         4            4                  0  (0, 51, 0.0501182369133)   
-         
-                                   t2                         t3  \textbackslash{}
-         0   (0, 51, 0.0359399147474)  (0, 164, 0.0376595073509)   
-         1    (0, 20, 0.779776537022)    (0, 12, 0.779803367384)   
-         2   (0, 51, 0.0281979252757)  (0, 164, 0.0288121842797)   
-         3   (0, 51, 0.0389222661251)  (0, 164, 0.0396330152771)   
-         4  (0, 164, 0.0517404219726)    (0, 0, 0.0528297430052)   
-         
-                                  t4                        t5  \textbackslash{}
-         0   (0, 3, 0.0397080188718)   (0, 4, 0.0528297430052)   
-         1    (0, 2, 0.782530229667)   (0, 51, 0.783338707682)   
-         2   (0, 3, 0.0305620152798)  (0, 89, 0.0514065648037)   
-         3   (0, 0, 0.0397080188718)  (0, 89, 0.0561100545498)   
-         4  (0, 89, 0.0561541708028)    (0, 2, 0.056783952728)   
-         
-                                  t6                        t7  \textbackslash{}
-         0  (0, 89, 0.0580634641408)    (0, 20, 0.07567636464)   
-         1  (0, 164, 0.783909043148)   (0, 89, 0.784274288393)   
-         2    (0, 4, 0.056783952728)  (0, 20, 0.0684922264926)   
-         3   (0, 4, 0.0598932093912)   (0, 20, 0.068138113654)   
-         4   (0, 3, 0.0598932093912)  (0, 20, 0.0679924634429)   
-         
-                                   t8                         t9  \textbackslash{}
-         0    (0, 8, 0.0947485982844)   (0, 12, 0.0951097299117)   
-         1     (0, 3, 0.787375742997)     (0, 0, 0.788748000693)   
-         2    (0, 12, 0.086483464085)    (0, 8, 0.0909512466903)   
-         3    (0, 8, 0.0872259025822)   (0, 12, 0.0880750449304)   
-         4  (0, 140, 0.0828696492217)  (0, 150, 0.0847161155849)   
-         
-                                  t10  
-         0  (0, 140, 0.0985190138579)  
-         1   (0, 150, 0.789548016068)  
-         2   (0, 140, 0.093603662507)  
-         3  (0, 140, 0.0933725082431)  
-         4    (0, 12, 0.085201106819)  
+{\color{outcolor}Out[{\color{outcolor}39}]:} ['great',
+          'love',
+          'best',
+          'delici',
+          'good',
+          'find',
+          'perfect',
+          'favorit',
+          'make',
+          'use',
+          'easi',
+          'high recommend',
+          'excel',
+          'nice',
+          'keep',
+          'enjoy',
+          'wonder',
+          'this',
+          'snack',
+          'year',
+          'store',
+          'littl',
+          'alway',
+          'add',
+          'high',
+          'tasti',
+          'thank',
+          'quick',
+          'recommend',
+          'also',
+          'well',
+          'price',
+          'without',
+          'carri',
+          'happi',
+          'day',
+          'everi',
+          'it',
+          'tast great',
+          'found',
+          'these',
+          'smooth',
+          'ive',
+          'amaz',
+          'fresh',
+          'healthi',
+          'morn',
+          'famili',
+          'fast',
+          'tea',
+          'glad',
+          'satisfi',
+          'treat',
+          'friend',
+          'this best',
+          'need',
+          'right',
+          'this great',
+          'addict',
+          'bit',
+          'time',
+          'rich',
+          'great tast',
+          'mix',
+          'hard find',
+          'long',
+          'great product',
+          'cook',
+          'yummi',
+          'definit',
+          'flavor',
+          'free',
+          'awesom',
+          'husband',
+          'avail',
+          'fantast',
+          'work',
+          'beat',
+          'breakfast',
+          'home',
+          'great price',
+          'meal',
+          'hook',
+          'sweet',
+          'they',
+          'kid',
+          'help',
+          'one best',
+          'local',
+          'make great',
+          'calori',
+          'cold',
+          'especi',
+          'abl',
+          'realli good',
+          'conveni',
+          'sometim',
+          'everyon',
+          'ice',
+          'delight']
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{result}\PY{o}{.}\PY{n}{tail}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}40}]:} \PY{n}{top\PYZus{}negative\PYZus{}features}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}19}]:}     transaction  transaction\_class                         t1  \textbackslash{}
-         95           95                  0  (0, 2677, 0.040226263837)   
-         96           96                  0   (0, 84, 0.0710625044389)   
-         97           97                  0  (0, 714, 0.0408336523342)   
-         98           98                  0  (0, 251, 0.0466450213338)   
-         99          541                  1  (0, 460, 0.0166922986392)   
-         
-                                     t2                          t3  \textbackslash{}
-         95  (0, 1641, 0.0431744779024)   (0, 159, 0.0432150827357)   
-         96    (0, 318, 0.073790798285)   (0, 119, 0.0738733680443)   
-         97   (0, 645, 0.0413378158211)    (0, 217, 0.041950824106)   
-         98   (0, 243, 0.0515992908774)   (0, 333, 0.0589672923647)   
-         99  (1, 8296, 0.0216110277492)  (1, 8615, 0.0217160642217)   
-         
-                                     t4                          t5  \textbackslash{}
-         95   (0, 129, 0.0436856175685)   (0, 192, 0.0447586823714)   
-         96   (0, 239, 0.0741257028008)     (0, 72, 0.077396514654)   
-         97  (0, 1154, 0.0424707933667)   (0, 401, 0.0425619058362)   
-         98   (0, 260, 0.0607472819025)   (0, 208, 0.0643456032789)   
-         99   (1, 9035, 0.021940381583)  (1, 8335, 0.0219718650971)   
-         
-                                     t6                          t7  \textbackslash{}
-         95   (0, 230, 0.0451058668679)   (0, 593, 0.0467195270938)   
-         96   (0, 268, 0.0789593229811)   (0, 341, 0.0794446861524)   
-         97   (0, 975, 0.0434620297165)  (0, 1298, 0.0435382686224)   
-         98   (0, 432, 0.0675092325415)  (0, 1300, 0.0678558786352)   
-         99  (1, 9252, 0.0220768521941)  (1, 9487, 0.0222108920308)   
-         
-                                      t8                          t9  \textbackslash{}
-         95    (0, 843, 0.0486878052336)   (0, 124, 0.0507052739904)   
-         96     (0, 81, 0.0799750108664)   (0, 842, 0.0804460532021)   
-         97  (0, 46841, 0.0437711420047)   (0, 485, 0.0438100697851)   
-         98    (0, 266, 0.0682828909291)    (0, 42, 0.0683198210954)   
-         99   (1, 9509, 0.0222138461766)  (1, 9179, 0.0223664265243)   
-         
-                                    t10  
-         95   (0, 344, 0.0512113405279)  
-         96   (0, 434, 0.0805112868277)  
-         97  (0, 1031, 0.0440519908616)  
-         98   (0, 906, 0.0683384731375)  
-         99  (1, 6717, 0.0225785468783)  
+{\color{outcolor}Out[{\color{outcolor}40}]:} ['disappoint',
+          'not',
+          'return',
+          'wast',
+          'wast money',
+          'worst',
+          'not buy',
+          'aw',
+          'horribl',
+          'would not',
+          'terribl',
+          'bad',
+          'money',
+          'threw',
+          'not recommend',
+          'not worth',
+          'refund',
+          'stale',
+          'disgust',
+          'veri disappoint',
+          'wont buy',
+          'not good',
+          'dont wast',
+          'thought',
+          'descript',
+          'not order',
+          'not purchas',
+          'tast like',
+          'away',
+          'unfortun',
+          'wors',
+          'poor',
+          'mayb',
+          'pictur',
+          'never buy',
+          'receiv',
+          'didnt',
+          'nasti',
+          'bewar',
+          'gross',
+          'not even',
+          'throw',
+          'expir',
+          'bland',
+          'yuck',
+          'tasteless',
+          'trash',
+          'rip',
+          'contact',
+          'stuck',
+          'mistak',
+          'threw away',
+          'would',
+          'sorri',
+          'review',
+          'noth like',
+          'weak',
+          'never order',
+          'ined',
+          'two star',
+          'throw away',
+          'bad batch',
+          'tast aw',
+          'end throw',
+          'buyer bewar',
+          'mislead',
+          'worst tast',
+          'tast bad',
+          'hope',
+          'unpleas',
+          'cancel',
+          'item',
+          'list',
+          'label',
+          'disappoint product',
+          'china',
+          'product not',
+          'tast horribl',
+          'not tast',
+          'will not',
+          'want like',
+          'definit not',
+          'tast noth',
+          'tast terribl',
+          'realli disappoint',
+          'this not',
+          'read',
+          'open',
+          'noth',
+          'extrem disappoint',
+          'guess',
+          'wouldnt',
+          'date',
+          'got bad',
+          'high hope',
+          'not return',
+          'buyer',
+          'box',
+          'dont buy',
+          'this worst']
 \end{Verbatim}
             
 
